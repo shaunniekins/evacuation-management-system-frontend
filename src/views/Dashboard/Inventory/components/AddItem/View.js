@@ -5,13 +5,20 @@ import {
   Icon,
   Spacer,
   Text,
+  Table,
+  Thead,
+  Tbody,
+  Td,
+  Tr,
+  Th,
+  TableContainer,
   useColorModeValue,
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 
@@ -30,11 +37,23 @@ const View = () => {
   );
   const [query, setQuery] = useState("");
 
-  const entries = ItemList().filter(
-    (entry) =>
-      entry.name.toLowerCase().includes(query.toLowerCase()) ||
-      entry.unit.toLowerCase().includes(query.toLowerCase())
-  );
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+
+      const filteredEntries = data.filter(
+        (entry) =>
+          entry.name.toLowerCase().includes(query.toLowerCase()) ||
+          entry.unit.toLowerCase().includes(query.toLowerCase())
+      );
+      setEntries(filteredEntries);
+      // console.log("filteredEntries: ", filteredEntries);
+    };
+
+    fetchItems();
+  }, [query]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -107,9 +126,52 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
+              <TableContainer maxH="50vh" overflowY="auto" align={"center"}>
+                <Table
+                  color={textColor}
+                  variant="striped"
+                  colorScheme="blue"
+                  border="1">
+                  <Thead>
+                    <Th
+                      style={{
+                        maxWidth: "100px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        textAlign: "center", // Add this line
+                      }}>
+                      <Text>ITEM</Text>
+                    </Th>
+                    <Th
+                      style={{
+                        maxWidth: "100px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        textAlign: "center", // Add this line
+                      }}>
+                      <Text>UNIT</Text>
+                    </Th>
+                    <Th
+                      style={{
+                        maxWidth: "100px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        textAlign: "center", // Add this line
+                      }}>
+                      <Text align={"center"}>ACTION</Text>
+                    </Th>
+                  </Thead>
+                </Table>
+              </TableContainer>
+
               {entries.map((row, index) => {
                 return (
                   <ItemRow
+                    entries={entries}
+                    setEntries={setEntries}
                     key={index}
                     id={row.id}
                     name={row.name}
@@ -122,7 +184,9 @@ const View = () => {
         </CardBody>
       </Card>
 
-      <AddModal {...{ isOpen, onClose, initialRef, finalRef }} />
+      <AddModal
+        {...{ entries, setEntries, isOpen, onClose, initialRef, finalRef }}
+      />
     </>
   );
 };

@@ -67,8 +67,14 @@ export class PrintableReports extends React.PureComponent {
         )}
         {selectedReports.includes("table") && (
           <div className="report-container">
+            <Text
+              fontWeight={"semibold"}
+              fontSize={"50px"}
+              textAlign={"center"}>
+              {/* MUNICAPALITY OF BUNAWAN{" "} */}
+            </Text>{" "}
             <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
-              Evacuee{" "}
+              {/* List of Evacuee{" "} */}
             </Text>
             <TableList startDate={startDate} endDate={endDate} />
           </div>

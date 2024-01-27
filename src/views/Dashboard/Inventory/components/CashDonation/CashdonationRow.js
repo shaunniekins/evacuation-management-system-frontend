@@ -4,6 +4,13 @@ import {
   Icon,
   Flex,
   Text,
+  Table,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Thead,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React from "react";
@@ -16,8 +23,17 @@ import UpdateModal from "./UpdateModal";
 import { useHistory } from "react-router-dom";
 
 function CashdonationRow(props) {
-  const { id, controlNumber, givenBy, donor, amount, modeOfTransfer, date } =
-    props;
+  const {
+    entries,
+    setEntries,
+    id,
+    controlNumber,
+    givenBy,
+    donor,
+    amount,
+    modeOfTransfer,
+    date,
+  } = props;
 
   const history = useHistory();
 
@@ -31,7 +47,7 @@ function CashdonationRow(props) {
 
   return (
     <>
-      <Box p="24px" bg={bgColor} my="15px" borderRadius="12px">
+      {/* <Box p="24px" bg={bgColor} my="15px" borderRadius="12px">
         <Flex justify="space-between" w="100%">
           <Flex direction="column" justify={"center"} maxWidth="70%">
             <Text color={nameColor} fontSize="md" fontWeight="bold" mb="10px">
@@ -90,7 +106,7 @@ function CashdonationRow(props) {
               me={{ md: "12px" }}
               onClick={async () => {
                 await cashDonationDelete(id);
-                history.push("/admin/dashboard");
+                setEntries(entries.filter((item) => item.id !== id));
               }}>
               <Flex color="red.500" cursor="pointer" align="center" p="12px">
                 <Icon as={FaTrashAlt} me="4px" />
@@ -109,10 +125,144 @@ function CashdonationRow(props) {
             </Button>
           </Flex>
         </Flex>
+      </Box> */}
+
+      <Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
+        <Flex direction="column" justify={"center"} maxWidth="100%">
+          <TableContainer maxH="50vh" overflowY="auto">
+            <Table
+              color={textColor}
+              variant="striped"
+              colorScheme="blue"
+              border="1">
+              <Tbody>
+                <Tr>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {givenBy}
+                    </Text>
+                  </Td>
+
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {donor}
+                    </Text>
+                  </Td>
+
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {date}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {modeOfTransfer}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {controlNumber}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Button
+                      p="0px"
+                      bg="transparent"
+                      mb={{ sm: "10px", md: "0px" }}
+                      me={{ md: "12px" }}
+                      onClick={() => handleDelete(id, itemID)}
+                      style={{
+                        maxWidth: "90px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Flex
+                        color="red.500"
+                        cursor="pointer"
+                        align="center"
+                        p="12px">
+                        <Icon as={FaTrashAlt} me="4px" />
+                        <Text fontSize="sm" fontWeight="semibold">
+                          DELETE
+                        </Text>
+                      </Flex>
+                    </Button>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "90px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Button
+                      p="0px"
+                      bg="transparent"
+                      style={{
+                        maxWidth: "90px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Flex color={textColor} cursor="pointer" p="12px">
+                        <Icon as={FaPencilAlt} me="4px" />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          onClick={onOpen}>
+                          EDIT
+                        </Text>
+                      </Flex>
+                    </Button>
+                  </Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Flex>
       </Box>
 
       <UpdateModal
         {...{
+          entries,
+          setEntries,
           id,
           controlNumber,
           givenBy,

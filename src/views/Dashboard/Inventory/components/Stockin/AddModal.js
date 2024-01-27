@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Button,
@@ -18,17 +18,29 @@ import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
 import { ItemList } from "api/itemAPI";
 
 import { useHistory } from "react-router-dom";
+import { StockinList } from "api/stockinAPI";
 
 const AddModal = ({
   // addEntries,
   // itemName,
   // itemUnit,
+  entries,
+  setEntries,
   isOpen,
   onClose,
   initialRef,
   finalRef,
 }) => {
-  const addEntries = ItemList();
+  const [addEntries, setAddEntries] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setAddEntries(data);
+    };
+
+    fetchItems();
+  }, []);
 
   const history = useHistory();
 
@@ -41,6 +53,7 @@ const AddModal = ({
     const dateReceived = event.target.dateReceived.value;
     const itemIDValueSubmit = itemIDValue;
     const qty = event.target.qty.value;
+    const expir_date = event.target.expir_date.value;
 
     try {
       const result = await StockinAdd(
@@ -48,7 +61,8 @@ const AddModal = ({
         donor,
         dateReceived,
         itemIDValueSubmit,
-        qty
+        qty,
+        expir_date
       );
     } catch (error) {
       alert("Failed");
@@ -73,8 +87,10 @@ const AddModal = ({
         const resultInventory = await InventoryAdd(itemIDValueSubmit, qty);
       }
 
+      const updatedItems = await StockinList();
+      setEntries(updatedItems);
       onClose();
-      history.push("/admin/dashboard");
+      // history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -149,6 +165,16 @@ const AddModal = ({
                 defaultValue={formattedDate}
                 ref={initialRef}
                 placeholder="Date Received"
+              />
+              <FormLabel>Expiration Date</FormLabel>
+              <Input
+                required
+                type="date"
+                id="expir_date-field"
+                name="expir_date"
+                defaultValue={formattedDate}
+                ref={initialRef}
+                placeholder="Expiation Date"
               />
               <FormLabel>Item</FormLabel>
               <Flex justify={"space-between"} gap={2}>

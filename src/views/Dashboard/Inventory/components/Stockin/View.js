@@ -1,17 +1,25 @@
 // Chakra imports
 import {
+  Box,
   Button,
   Flex,
   Icon,
   Spacer,
   Text,
+  Table,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Thead,
   useColorModeValue,
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 
@@ -24,6 +32,7 @@ import { ItemList } from "api/itemAPI";
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
+  const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const borderColor = useColorModeValue("#dee2e6", "gray.500");
   const bgButton = useColorModeValue(
     "linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%)",
@@ -32,16 +41,24 @@ const View = () => {
   // console.log("stockin: ", StockinList());
   const [query, setQuery] = useState("");
 
-  // const entries = StockinList();
+  const [entries, setEntries] = useState([]);
 
-  const entries = StockinList().filter(
-    (entry) =>
-      entry.givenBy.toLowerCase().includes(query.toLowerCase()) ||
-      entry.item.toLowerCase().includes(query.toLowerCase())
-    // entry.unit.toLowerCase().includes(query.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await StockinList();
 
-  const addEntries = ItemList();
+      const filteredEntries = data.filter(
+        (entry) =>
+          entry.givenBy.toLowerCase().includes(query.toLowerCase()) ||
+          entry.item.toLowerCase().includes(query.toLowerCase())
+      );
+      setEntries(filteredEntries);
+    };
+
+    fetchItems();
+  }, [query]);
+
+  // const addEntries = ItemList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -114,10 +131,107 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
-              {entries.map((row, index) => {
+              <Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
+                <Flex direction="column" justify={"center"} maxWidth="100%">
+                  <TableContainer maxH="50vh" overflowY="auto">
+                    <Table
+                      color={textColor}
+                      variant="striped"
+                      colorScheme="blue"
+                      border="1"
+                      direction="column"
+                      justify={"center"}
+                      maxWidth="100%">
+                      <Thead>
+                        <Th
+                          style={{
+                            maxWidth: "100px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            ITEM
+                          </Text>
+                        </Th>
+                        <Th
+                          style={{
+                            maxWidth: "100px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            from Organization
+                          </Text>
+                        </Th>
+                        <Th
+                          style={{
+                            maxWidth: "100px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            DATE RECEIVED
+                          </Text>
+                        </Th>
+                        <Th
+                          style={{
+                            maxWidth: "100px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            EXPIRATION DATE
+                          </Text>
+                        </Th>
+                        <Th
+                          style={{
+                            maxWidth: "100px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            UNIT
+                          </Text>
+                        </Th>
+                        <Th
+                          style={{
+                            maxWidth: "110px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            QUANTITY
+                          </Text>
+                        </Th>
+                        <Th
+                          style={{
+                            maxWidth: "100px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                          <Text color={textColor} cursor="pointer" p="12px">
+                            ACTION
+                          </Text>
+                        </Th>
+                      </Thead>
+                      <Tbody></Tbody>
+                    </Table>
+                  </TableContainer>
+                </Flex>
+              </Box>
+              {entries.reverse().map((row, index) => {
                 // console.log(row.unit);
                 return (
                   <StockinRow
+                    entries={entries}
+                    setEntries={setEntries}
                     key={index}
                     // addEntries={addEntries}
                     id={row.id}
@@ -140,6 +254,8 @@ const View = () => {
         // itemName={row.name}
         // itemUnit={row.unit}
         // addEntries={addEntries}
+        entries={entries}
+        setEntries={setEntries}
         isOpen={isOpen}
         onClose={onClose}
         initialRef={initialRef}

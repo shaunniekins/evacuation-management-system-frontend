@@ -1,19 +1,10 @@
 import { useState, useEffect } from "react";
 
-export const cashDonationList = () => {
-  const [entries, setEntries] = useState([]);
+export const cashDonationList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/cashdonation");
+  let data = await response.json();
 
-  useEffect(() => {
-    getCashDonation();
-  }, []);
-
-  const getCashDonation = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/cashdonation");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 export const cashDonationAdd = async (

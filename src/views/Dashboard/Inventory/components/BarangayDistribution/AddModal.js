@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Box,
@@ -41,7 +41,18 @@ const AddModal = ({
 }) => {
   const textColor = useColorModeValue("gray.700", "white");
 
-  const itemEntry = ItemList();
+  // const itemEntry = ItemList();
+  const [itemEntry, setItemEntry] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setItemEntry(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const inventoryList = InventoryList();
   const barangayEntry = BarangayList();
   const barangayInventoryList = BarangayInventoryList();
@@ -50,7 +61,17 @@ const AddModal = ({
 
   const history = useHistory();
 
-  const entry1 = ItemList();
+  // const entry1 = ItemList();
+  const [entry1, setEntry1] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setEntry1(data);
+    };
+
+    fetchItems();
+  }, []);
 
   const idConvertName = (itemID, itemUnit, itemQty) => {
     const selectedItem = entry1.find((item) => item.id === itemID);

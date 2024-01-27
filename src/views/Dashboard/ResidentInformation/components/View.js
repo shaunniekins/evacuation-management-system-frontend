@@ -32,6 +32,7 @@ function View() {
   const [isIp, setIsIp] = useState("");
   const [isHead, setIsHead] = useState("");
   const [age, setAge] = useState("");
+  const [length_of_year_count, setLofY] = useState("");
 
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
@@ -74,15 +75,18 @@ function View() {
         event.target.is_pwd.value,
         event.target.is_ip.value,
         event.target.is_head.value,
-        event.target.household_num.value
+        event.target.household_num.value,
+        event.target.street_add.value,
+        event.target.length_of_year.value
       ); // call the API function
       alert("Added Successfully");
 
       setFormData({});
       setAge("");
       setIsPwd("");
-      setIsIp(""); // Reset the default value of is_ip radio group to null
-      setIsHead(""); // Reset the default value of is_head radio group to null
+      setLofY("");
+      setIsIp("");
+      setIsHead("");
     } catch (error) {
       alert("Failed");
     }
@@ -93,6 +97,14 @@ function View() {
     const today = new Date();
     const age = today.getFullYear() - birthdate.getFullYear();
     setAge(age);
+    handleChange(event); // Call handleChange to update formData state as well
+  };
+
+  const handlelengthofyearChange = (event) => {
+    const lofy = new Date(event.target.value);
+    const today = new Date();
+    const length_of_year_count = today.getFullYear() - lofy.getFullYear();
+    setLofY(length_of_year_count);
     handleChange(event); // Call handleChange to update formData state as well
   };
 
@@ -118,10 +130,10 @@ function View() {
   const handleClear = (event) => {
     setFormData({});
     setAge("");
-
     setIsPwd("");
     setIsIp("");
     setIsHead("");
+    setLofY("");
   };
 
   return (
@@ -232,6 +244,32 @@ function View() {
                       </option>
                     ))}
                 </Select>
+                <FormLabel>Length of Year</FormLabel>
+                <Flex justify={"space-between"} gap={2}>
+                  <Input
+                    required
+                    type="date"
+                    id="length_of_year-field"
+                    name="length_of_year"
+                    placeholder="Length of Year"
+                    value={formData.length_of_year || ""}
+                    onChange={(event) => {
+                      handleChange(event);
+                      handlelengthofyearChange(event);
+                    }}
+                  />
+                  <Input
+                    required
+                    disabled
+                    type="text"
+                    id="length_of_year_count-field"
+                    name="length_of_year_count"
+                    placeholder="No."
+                    w={"20%"}
+                    textAlign={"center"}
+                    value={length_of_year_count}
+                  />
+                </Flex>
               </Flex>
               <Flex direction={"column"} w={"100%"}>
                 <FormLabel>Contact Number</FormLabel>
@@ -289,11 +327,11 @@ function View() {
                   value={formData.resident_status || ""}
                   onChange={handleChange}>
                   <option value="permanent">Permanent</option>
-                  <option value="temporary">Temporary</option>
+                  <option value="present">Present</option>
                 </Select>
                 <FormLabel>Household Number</FormLabel>
                 <Input
-                  required
+                  // required
                   type="text"
                   id="household_num-field"
                   name="household_num"
@@ -324,6 +362,15 @@ function View() {
                     }
                   }}
                 />
+                <FormLabel>Street</FormLabel>
+                <Input
+                  required
+                  id="street_add-field"
+                  name="street_add"
+                  placeholder="eg. P-5 Barangay Cliss , Bunawan"
+                  value={formData.street_add || ""}
+                  onChange={handleChange}
+                />
               </Flex>
               <Flex direction={"column"}>
                 <Flex
@@ -341,8 +388,8 @@ function View() {
                       value={isPwd}
                       onChange={(value) => setIsPwd(value)}>
                       <Stack spacing={4} direction="row">
-                        <Radio value="YES">Yes</Radio>
-                        <Radio value="NO">No</Radio>
+                        <Radio value="PWD">Yes</Radio>
+                        <Radio value="NOT PWD">No</Radio>
                       </Stack>
                     </RadioGroup>
                     <FormLabel>Indigenous Person</FormLabel>
@@ -354,8 +401,8 @@ function View() {
                       value={isIp}
                       onChange={(value) => setIsIp(value)}>
                       <Stack spacing={4} direction="row">
-                        <Radio value="YES">Yes</Radio>
-                        <Radio value="NO">No</Radio>
+                        <Radio value="IP">Yes</Radio>
+                        <Radio value="NOT IP">No</Radio>
                       </Stack>
                     </RadioGroup>
                     <FormLabel>Head of the Family</FormLabel>
@@ -367,8 +414,8 @@ function View() {
                       value={isHead}
                       onChange={(value) => setIsHead(value)}>
                       <Stack spacing={4} direction="row">
-                        <Radio value="YES">Yes</Radio>
-                        <Radio value="NO">No</Radio>
+                        <Radio value="HEAD">Yes</Radio>
+                        <Radio value="MEMBER">No</Radio>
                       </Stack>
                     </RadioGroup>
                   </Flex>

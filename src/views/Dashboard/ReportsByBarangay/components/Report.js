@@ -206,7 +206,7 @@ export const PWDReport = ({ startDate, endDate }) => {
       if (!isAdmin && evacuee.barangay !== userBarangay) {
         continue;
       }
-      if (evacuee.is_pwd.toLowerCase() === "yes") {
+      if (evacuee.is_pwd.toLowerCase() === "pwd") {
         pwdNum++;
       } else {
         notPwdNum++;
@@ -278,8 +278,8 @@ export const IPReport = ({ startDate, endDate }) => {
         (e) => e.id === residentId && e.barangay === userBarangay
       );
       if (evacuee) {
-        if (evacuee.is_ip.toLowerCase() === "yes") ipNum++;
-        else if (evacuee.is_ip.toLowerCase() === "no") nonIpNum++;
+        if (evacuee.is_ip.toLowerCase() === "ip") ipNum++;
+        else if (evacuee.is_ip.toLowerCase() === "not ip") nonIpNum++;
       }
     }
   }
@@ -289,8 +289,8 @@ export const IPReport = ({ startDate, endDate }) => {
       const residentId = evacList[i].resident;
       const evacuee = evacueeList.find((e) => e.id === residentId);
       if (evacuee) {
-        if (evacuee.is_ip.toLowerCase() === "yes") ipNum++;
-        else if (evacuee.is_ip.toLowerCase() === "no") nonIpNum++;
+        if (evacuee.is_ip.toLowerCase() === "ip") ipNum++;
+        else if (evacuee.is_ip.toLowerCase() === "not ip") nonIpNum++;
       }
     }
   }

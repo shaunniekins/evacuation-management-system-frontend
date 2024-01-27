@@ -15,8 +15,16 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { ItemAdd } from "api/itemAPI";
 
 import { useHistory } from "react-router-dom";
+import { ItemList } from "api/itemAPI";
 
-const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
+const AddModal = ({
+  entries,
+  setEntries,
+  isOpen: isOpenAddModal,
+  onClose: onCloseAddModal,
+  initialRef,
+  finalRef,
+}) => {
   const history = useHistory();
 
   const handleSubmit = async (event) => {
@@ -25,9 +33,11 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
       const result = await ItemAdd(
         event.target.name.value,
         event.target.unit.value
-      ); // call the API function
-      onClose();
-      history.push("/admin/dashboard");
+      );
+
+      const updatedItems = await ItemList();
+      setEntries(updatedItems);
+      onCloseAddModal();
     } catch (error) {
       alert("Failed");
     }
@@ -40,8 +50,8 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpenAddModal}
+      onClose={onCloseAddModal}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -75,7 +85,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
             <Button colorscheme="blue" mr={3} type="submit">
               Add
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onCloseAddModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

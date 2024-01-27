@@ -91,7 +91,7 @@ export const evacDistributeUpdate = async (
 
 export const evacDistributeDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/items/" + id, {
+    fetch("http://127.0.0.1:8000/api/distributed/" + id, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

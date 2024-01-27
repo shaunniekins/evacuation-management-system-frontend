@@ -32,7 +32,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
 
     const resident = event.target.resident.value;
     const center = event.target.center.value;
-    const isHead = event.target.isHead.value === "Head" ? "Yes" : "No";
+    const isHead = event.target.isHead.value === "Head" ? "HEAD" : "MEMBER";
     const date = event.target.date.value;
 
     try {
@@ -64,7 +64,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     );
 
     if (matchingEntry) {
-      setUnitValue(matchingEntry.is_head === "YES" ? "Head" : "Member");
+      setUnitValue(matchingEntry.is_head === "HEAD" ? "Head" : "Member");
     } else {
       setUnitValue("");
     }

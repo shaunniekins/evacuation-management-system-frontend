@@ -18,14 +18,18 @@ import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 
 import { useHistory } from "react-router-dom";
+import { StockinList } from "api/stockinAPI";
 
 const UpdateModal = ({
+  entries,
+  setEntries,
   addEntries,
   id,
   givenBy,
   donor,
   dateReceived,
   itemID,
+  expir_date,
   // unit,
   qty,
   isOpen,
@@ -33,6 +37,16 @@ const UpdateModal = ({
   initialRef,
   finalRef,
 }) => {
+  // const [inventoryList, setInventoryList] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchItems = async () => {
+  //     let data = await InventoryList();
+  //     setInventoryList(data);
+  //   };
+
+  //   fetchItems();
+  // }, []);
   const inventoryList = InventoryList();
 
   // console.log("AddEntries: ", addEntries);
@@ -40,19 +54,22 @@ const UpdateModal = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const givenBy = event.target.givenBy.value;
     const donor = event.target.donor.value;
     const dateReceived = event.target.dateReceived.value;
-    const itemIDValueSubmit = itemIDValue; // assume this function retrieves the item ID
+    const itemIDValueSubmit = itemIDValue;
+    const expir_date = event.target.expir_date.value;
     const preQty = qty;
     const newQty = event.target.qty.value;
 
     try {
-      const result = await ItemUpdate(
+      const result = await StockinUpdate(
         id,
         givenBy,
         donor,
         dateReceived,
+        expir_date,
         // event.target.item.value,
         itemIDValueSubmit,
         // event.target.unit.value,
@@ -77,8 +94,10 @@ const UpdateModal = ({
         });
       }
 
+      const updatedItems = await StockinList();
+      setEntries(updatedItems);
+
       onClose();
-      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -87,7 +106,17 @@ const UpdateModal = ({
   const [itemUnit, setItemUnit] = useState("");
   const [unitValue, setUnitValue] = useState("itemUnit");
 
-  const entry1 = ItemList();
+  // const entry1 = ItemList();
+  const [entry1, setEntry1] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setEntry1(data);
+    };
+
+    fetchItems();
+  }, []);
 
   const selectedItem = entry1.find((item) => item.id === itemID);
 
@@ -142,7 +171,7 @@ const UpdateModal = ({
         <form onSubmit={handleSubmit}>
           <ModalHeader>Update Stock-in Item</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6}>
+          <ModalBody pb={7}>
             <FormControl>
               <FormLabel>From</FormLabel>
               <Flex justify={"space-between"} gap={2}>
@@ -178,6 +207,16 @@ const UpdateModal = ({
                 defaultValue={dateReceived}
                 ref={initialRef}
                 placeholder="Date Received"
+              />
+              <FormLabel>Expiration Date</FormLabel>
+              <Input
+                required
+                type="date"
+                id="expir_date-field"
+                name="expir_date"
+                defaultValue={expir_date}
+                ref={initialRef}
+                placeholder="Expiration Date"
               />
               <FormLabel>Item</FormLabel>
               <Flex justify={"space-between"} gap={2}>

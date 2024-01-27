@@ -18,7 +18,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
 import DistributeRow from "./DistributeRow";
-import { StockinList } from "api/stockinAPI";
+// import { StockinList } from "api/stockinAPI";
 import { ItemList } from "api/itemAPI";
 import { evacDistributeList } from "api/distributedEvacuees";
 
@@ -86,7 +86,7 @@ const View = () => {
     );
   });
 
-  const addEntries = ItemList();
+  // const addEntries = ItemList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 

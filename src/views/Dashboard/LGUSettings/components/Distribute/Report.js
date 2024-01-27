@@ -37,6 +37,9 @@ export const CompletedDistribution = () => {
 
   return (
     <Flex m={"3rem"} direction={"column"} gap={"2rem"}>
+      <Text textAlign={"center"} fontSize={"35px"} as={"b"}>
+        MUNICIPALILTY OF BUNAWAN
+      </Text>
       <Text textAlign={"center"} fontSize={"xl"} as={"b"}>
         Distribution of Goods to Evacuees in Barangay {userBarangay}: Recipients
       </Text>
@@ -46,7 +49,7 @@ export const CompletedDistribution = () => {
             <Thead>
               <Tr>
                 <Th>Evacuee</Th>
-                <Th>Repacked Item</Th>
+                {/* <Th>Repacked Item</Th> */}
                 <Th>Calamity</Th>
                 <Th>Date of Calamity</Th>
                 <Th>Date Distributed</Th>
@@ -63,7 +66,7 @@ export const CompletedDistribution = () => {
                         : "";
                     })}
                   </Td>
-                  <Td>{row.repackedItem}</Td>
+                  {/* <Td>{row.repackedItem}</Td> */}
                   <Td>{row.calamity}</Td>
                   <Td>{row.calamityDate}</Td>
                   <Td>{row.dateDistributed}</Td>

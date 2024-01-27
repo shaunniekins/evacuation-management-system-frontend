@@ -24,7 +24,7 @@ function Calamity() {
     { name: "Cash Donation", component: <ViewCashDonation /> },
   ];
 
-  if (!isPersonnel) {
+  if (isAdmin) {
     tabs.push({
       name: "Barangay Distribution",
       component: <ViewBarangayDistribution />,

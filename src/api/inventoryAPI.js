@@ -16,6 +16,13 @@ export const InventoryList = () => {
   return entries;
 };
 
+// export const InventoryList = async () => {
+//   let response = await fetch("http://127.0.0.1:8000/api/inventory");
+//   let data = await response.json();
+
+//   return data;
+// };
+
 export const InventoryAdd = async (item, qty) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/inventory/", {

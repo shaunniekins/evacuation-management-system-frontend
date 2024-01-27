@@ -1,19 +1,10 @@
-import { useState, useEffect } from "react";
+export const ItemList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/items");
+  let data = await response.json();
 
-export const ItemList = () => {
-  const [entries, setEntries] = useState([]);
+  // console.log("itemList: ", data);
 
-  useEffect(() => {
-    getItem();
-  }, []);
-
-  const getItem = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/items");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 export const ItemAdd = async (name, unit) => {
@@ -30,14 +21,14 @@ export const ItemAdd = async (name, unit) => {
         unit: unit,
       }),
     });
-    const data = await response.json();
-    return data;
+    const data = await response.json(); // Parse the response body as JSON
+
+    return data; // This will now be the inserted data
   } catch (error) {
     console.error("Error:", error);
     throw error;
   }
 };
-
 export const ItemUpdate = async (id, name, unit) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/items/" + id, {
@@ -61,19 +52,17 @@ export const ItemUpdate = async (id, name, unit) => {
 };
 
 export const ItemDelete = (id) => {
-  if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/items/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then(() => {
-        console.log("Deleted!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+  fetch("http://127.0.0.1:8000/api/items/" + id, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    // .then(() => {
+    //   console.log("Deleted!");
+    // })
+    .catch((error) => {
+      console.log(error);
+    });
 };

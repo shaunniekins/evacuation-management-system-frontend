@@ -15,8 +15,11 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { ItemUpdate } from "api/itemAPI";
 
 import { useHistory } from "react-router-dom";
+import { ItemList } from "api/itemAPI";
 
 const UpdateModal = ({
+  entries,
+  setEntries,
   id,
   name,
   unit,
@@ -35,8 +38,10 @@ const UpdateModal = ({
         event.target.name.value,
         event.target.unit.value
       );
+      const updatedItems = await ItemList();
+      setEntries(updatedItems);
+
       onClose();
-      history.push("/admin/resident-information");
     } catch (error) {
       alert("Failed");
     }

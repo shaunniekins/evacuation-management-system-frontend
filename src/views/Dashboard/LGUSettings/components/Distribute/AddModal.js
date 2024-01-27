@@ -44,7 +44,7 @@ import { useContext } from "react";
 import AuthContext from "context/AuthContext";
 
 const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
-  const addEntries = ItemList();
+  // const addEntries = ItemList();
   const history = useHistory();
 
   const inventoryList = InventoryList();
@@ -76,7 +76,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
 
     const dateDistributed = event.target.dateDistributed.value;
     const evacuee = displayName;
-    const headFamily = event.target.isHead.value === "Head" ? "yes" : "no";
+    const headFamily = event.target.isHead.value === "Head" ? "head" : "member";
     const is_distributed = 0;
 
     // console.log("repackedItem: ", repackedItem);
@@ -132,13 +132,13 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     }
   };
 
-  const entry1 = ItemList();
+  // const entry1 = ItemList();
   // const [countItems, setCountItems] = useState(1);
   let count = 1;
   let countItem = 1;
 
   const idConvertName = (itemID, itemUnit, itemQty, instance) => {
-    return `Repacked #${count++} ✖ ${instance} items`;
+    return `Packs #${count++} ✖ ${instance} items`;
   };
 
   const handleSelectChange = (event) => {
@@ -150,7 +150,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     );
     if (matchingEntry) {
       setUnitValue(
-        matchingEntry.is_head.toLowerCase() === "yes" ? "Head" : "Member"
+        matchingEntry.is_head.toLowerCase() === "head" ? "Head" : "Member"
       );
     } else {
       setUnitValue("");
@@ -171,6 +171,14 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
       uniqueEvacuees.push(entry);
     }
   });
+
+  const [selectedRole, setSelectedRole] = useState("");
+  const [sectionHead, setSectionHead] = useState("");
+
+  // Filter residentEntries to get only section heads
+  const sectionHeads = residentEntries.filter(
+    (entry) => entry.is_head.toLowerCase() === "head"
+  );
 
   return (
     <Modal
@@ -291,7 +299,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
               >
                 {repackedList.map((entry) => (
                   <option key={entry.id} value={entry.id} data-id={entry.id}>
-                    {`Repacked #${countItem++}`}
+                    {`Packs #${countItem++}`}
                   </option>
                 ))}
               </Select>

@@ -54,7 +54,7 @@ function ItemRow(props) {
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               <Text as="span" color="gray.400">
-                {isHead === "Yes" ? "Head of the Family" : ""}
+                {isHead === "HEAD" ? "Head of the Family" : ""}
               </Text>
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">

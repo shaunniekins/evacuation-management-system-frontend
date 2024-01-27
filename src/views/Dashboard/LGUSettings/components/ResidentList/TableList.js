@@ -92,6 +92,20 @@ const TableList = () => {
     return age;
   };
 
+  const calculatelengthofyear = (LentghOfYear) => {
+    const today = new Date();
+    const birthdateObj = new Date(LentghOfYear);
+    let length_of_year_count = today.getFullYear() - birthdateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthdateObj.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthdateObj.getDate())
+    ) {
+      length_of_year_count--;
+    }
+    return length_of_year_count;
+  };
+
   return (
     <>
       <Flex
@@ -157,6 +171,13 @@ const TableList = () => {
                   Household Number
                 </Th>
                 <Th color="gray.400" pr="0px">
+                  Street
+                </Th>
+                <Th color="gray.400" pr="0px">
+                  {" "}
+                  Length Of Year
+                </Th>
+                <Th color="gray.400" pr="0px">
                   Options
                 </Th>
               </Tr>
@@ -181,6 +202,9 @@ const TableList = () => {
                   <Td>{row.is_ip}</Td>
                   <Td>{row.is_head}</Td>
                   <Td>{row.household_num}</Td>
+                  <Td>{row.street_add}</Td>
+                  <Td>{calculatelengthofyear(row.length_of_year)}</Td>
+
                   <Td>
                     <Flex justify="space-around">
                       <Button

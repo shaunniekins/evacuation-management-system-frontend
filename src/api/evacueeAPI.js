@@ -31,7 +31,9 @@ export const evacueeAdd = async (
   is_pwd,
   is_ip,
   is_head,
-  household_num
+  household_num,
+  street_add,
+  length_of_year
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/resident/", {
@@ -57,6 +59,8 @@ export const evacueeAdd = async (
         is_ip: is_ip,
         is_head: is_head,
         household_num: household_num,
+        street_add: street_add,
+        length_of_year: length_of_year,
       }),
     });
     const data = await response.json();
@@ -83,7 +87,9 @@ export const evacueeUpdate = async (
   is_pwd,
   is_ip,
   is_head,
-  household_num
+  household_num,
+  street_add,
+  length_of_year
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/resident/" + id, {
@@ -108,6 +114,8 @@ export const evacueeUpdate = async (
         is_ip: is_ip,
         is_head: is_head,
         household_num: household_num,
+        street_add: street_add,
+        length_of_year: length_of_year,
       }),
     });
     const data = await response.json();

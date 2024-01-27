@@ -5,6 +5,13 @@ import {
   Flex,
   Text,
   useColorModeValue,
+  Table,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Thead,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
@@ -72,7 +79,9 @@ function RepackedRow(props) {
 
       const id = matchingInventoryItem.id;
       const qtyEach = qtyArr[i].trim();
-      const qty = parseFloat(matchingInventoryItem.qty) + parseFloat(qtyEach);
+      const qty =
+        parseFloat(matchingInventoryItem.qty) +
+        parseFloat(qtyEach) * parseFloat(instance);
 
       const unit = unitsArr[i].trim();
       const barangaySub = matchingBarangayName ? matchingBarangayName.id : "";
@@ -100,7 +109,7 @@ function RepackedRow(props) {
 
   return (
     <>
-      <Box px="24px" bg={bgColor} my="15px" borderRadius="12px">
+      {/* <Box px="24px" bg={bgColor} my="15px" borderRadius="12px">
         <Flex justify="space-between" w="100%">
           <Flex direction="column" justify={"center"} maxWidth="70%">
             <Text color={nameColor} fontSize="md" fontWeight="bold" mb="10px">
@@ -158,6 +167,102 @@ function RepackedRow(props) {
             </Button>
           </Flex>
         </Flex>
+      </Box> */}
+
+      <Box px="24px" bg={bgColor} my="15px" borderRadius="12px">
+        <TableContainer maxH="50vh" overflowY="auto">
+          <Table color={textColor} variant="striped" colorScheme="blue">
+            <Thead>
+              <Th>
+                {" "}
+                <Text
+                  color={nameColor}
+                  fontSize="md"
+                  fontWeight="bold"
+                  mb="10px">
+                  {`Repacked #`}
+                </Text>
+              </Th>
+
+              <Th>
+                <Text color={textColor} cursor="pointer" p="12px">
+                  Items{" "}
+                </Text>
+              </Th>
+              <Th>
+                <Text color={textColor} cursor="pointer" p="12px">
+                  Deliverables{" "}
+                </Text>
+              </Th>
+              <Th>
+                <Text color={textColor} cursor="pointer" p="12px">
+                  Reason{" "}
+                </Text>
+              </Th>
+              <Th>
+                <Text color={textColor} cursor="pointer" p="12px">
+                  Action
+                </Text>
+              </Th>
+            </Thead>
+            <Tbody>
+              <Tr>
+                <Td>
+                  <Text color={textColor} cursor="pointer" p="12px">
+                    {`${countItem}`}
+                  </Text>
+                </Td>
+                <Td>
+                  <Text color={textColor} cursor="pointer" p="12px">
+                    {items.split(", ").map((item, index) => {
+                      // console.log("item: ", item);
+                      const suffix =
+                        index === items.split(", ").length - 1 ? "" : "; ";
+                      const selectedItem = entry1.find(
+                        (itemList) => itemList.id === parseInt(item)
+                      );
+                      const itemName = selectedItem
+                        ? selectedItem.name
+                        : "Item not found";
+                      return `${itemName} (${qty.split(", ")[index]}${
+                        units.split(", ")[index]
+                      })${suffix}`;
+                    })}
+                  </Text>
+                </Td>
+                <Td>
+                  <Text color={textColor} cursor="pointer" p="12px">
+                    {instance}
+                  </Text>
+                </Td>
+                <Td>
+                  <Text color={textColor} cursor="pointer" p="12px">
+                    {reason}
+                  </Text>
+                </Td>
+                <Td>
+                  <Button
+                    p="0px"
+                    bg="transparent"
+                    mb={{ sm: "10px", md: "0px" }}
+                    me={{ md: "12px" }}
+                    onClick={() => handleDelete(id)}>
+                    <Flex
+                      color="red.500"
+                      cursor="pointer"
+                      align="center"
+                      p="12px">
+                      <Icon as={FaTrashAlt} me="4px" />
+                      <Text fontSize="sm" fontWeight="semibold">
+                        DELETE
+                      </Text>
+                    </Flex>
+                  </Button>
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
       </Box>
     </>
   );

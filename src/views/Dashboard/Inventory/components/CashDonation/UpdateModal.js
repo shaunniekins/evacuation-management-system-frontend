@@ -14,8 +14,11 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { cashDonationUpdate } from "api/cashDonationAPI";
 
 import { useHistory } from "react-router-dom";
+import { cashDonationList } from "api/cashDonationAPI";
 
 const UpdateModal = ({
+  entries,
+  setEntries,
   id,
   controlNumber,
   givenBy,
@@ -42,8 +45,10 @@ const UpdateModal = ({
         event.target.modeOfTransfer.value,
         event.target.date.value
       ); // call the API function
+      const updatedItems = await cashDonationList();
+      setEntries(updatedItems);
+
       onClose();
-      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }

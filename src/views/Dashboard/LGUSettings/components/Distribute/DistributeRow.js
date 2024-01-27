@@ -45,7 +45,7 @@ function DistributeRow(props) {
   const [itemName, setItemName] = useState("");
   const repackedList = RepackedList();
 
-  const entry1 = ItemList();
+  // const entry1 = ItemList();
 
   React.useEffect(() => {
     return function cleanup() {};
@@ -124,12 +124,12 @@ function DistributeRow(props) {
                 {`${calamity} -  ${calamityDate}`}
               </Text>
             </Text>
-            <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            {/* <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               Repacked Item:{" "}
               <Text as="span" color="gray.500">
                 {repackedItem}
               </Text>
-            </Text>
+            </Text> */}
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               Date Distributed:{" "}
               <Text as="span" color="gray.500">

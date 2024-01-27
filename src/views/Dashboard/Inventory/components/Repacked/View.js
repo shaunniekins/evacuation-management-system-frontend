@@ -49,7 +49,7 @@ const View = () => {
     // entry.unit.toLowerCase().includes(query.toLowerCase())
   );
 
-  const addEntries = ItemList();
+  // const addEntries = ItemList();
   const inventoryEntries = InventoryList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -125,7 +125,7 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
-              {entries.map((row, index) => {
+              {entries.reverse().map((row, index) => {
                 return (
                   <RepackedRow
                     key={index}

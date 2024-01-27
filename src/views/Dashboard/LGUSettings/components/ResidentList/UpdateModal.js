@@ -39,11 +39,14 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     is_ip,
     is_head,
     household_num,
+    street_add,
+    length_of_year,
   } = data;
 
   const history = useHistory();
 
   const [age, setAge] = useState("");
+  const [length_of_year_count, setLofY] = useState("");
 
   useEffect(() => {
     if (birthday) {
@@ -65,6 +68,26 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     return age;
   };
 
+  useEffect(() => {
+    if (length_of_year) {
+      setAge(calculatelengthofyear(length_of_year));
+    }
+  }, [length_of_year]);
+
+  const calculatelengthofyear = (LentghOfYear) => {
+    const today = new Date();
+    const birthdateObj = new Date(LentghOfYear);
+    let length_of_year_count = today.getFullYear() - birthdateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthdateObj.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthdateObj.getDate())
+    ) {
+      length_of_year_count--;
+    }
+    return length_of_year_count;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -84,7 +107,9 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
         event.target.is_pwd.value,
         event.target.is_ip.value,
         event.target.is_head.value,
-        event.target.household_num.value
+        event.target.household_num.value,
+        event.target.street_add.value,
+        event.target.length_of_year.value
       ); // call the API function
       onClose();
       history.push("/admin/resident-information");
@@ -102,6 +127,10 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     setAge(calculateAge(event.target.value));
   };
 
+  const handleLofYChange = (event) => {
+    setLofY(calculatelengthofyear(event.target.value));
+  };
+
   return (
     <Modal
       initialFocusRef={initialRef}
@@ -117,7 +146,7 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
           <ModalHeader>Update Calamity</ModalHeader>
           <ModalCloseButton />
           <Box overflowY="auto" maxHeight="70vh">
-            <ModalBody pb={6}>
+            <ModalBody pb={7}>
               <FormControl>
                 <Flex
                   direction={{ base: "column", lg: "row" }}
@@ -191,6 +220,29 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       ref={initialRef}
                       placeholder="Barangay"
                     />
+                    <FormLabel>Length Of Year</FormLabel>
+                    <Flex justify={"space-between"} gap={2}>
+                      <Input
+                        required
+                        type="date"
+                        name="length_of_year"
+                        defaultValue={length_of_year}
+                        ref={initialRef}
+                        placeholder="Length of Year"
+                        onChange={handleLofYChange}
+                      />
+                      <Input
+                        required
+                        disabled
+                        type="text"
+                        id="length_of_year_count-field"
+                        name="length_of_year_count"
+                        placeholder="No."
+                        w={"20%"}
+                        textAlign={"center"}
+                        value={length_of_year_count}
+                      />
+                    </Flex>
                   </Flex>
                   <Flex direction={"column"}>
                     {/* </Stack>
@@ -253,6 +305,15 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       ref={initialRef}
                       placeholder="Household Number"
                     />
+                    <FormLabel>Street</FormLabel>
+                    <Input
+                      required
+                      type="text"
+                      name="street_add"
+                      defaultValue={street_add}
+                      ref={initialRef}
+                      placeholder="Street"
+                    />
                     {/* </Stack>
                   </Stack> */}
                   </Flex>
@@ -265,8 +326,8 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       defaultValue={is_pwd}
                       value={is_pwd}>
                       <Stack spacing={4} direction="row">
-                        <Radio value="YES">Yes</Radio>
-                        <Radio value="NO">No</Radio>
+                        <Radio value="PWD">Yes</Radio>
+                        <Radio value="NOT PWD">No</Radio>
                       </Stack>
                     </RadioGroup>
                     <FormLabel>Indigenous Person</FormLabel>
@@ -276,8 +337,8 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       defaultValue={is_ip}
                       value={is_ip}>
                       <Stack spacing={4} direction="row">
-                        <Radio value="YES">Yes</Radio>
-                        <Radio value="NO">No</Radio>
+                        <Radio value="IP">Yes</Radio>
+                        <Radio value="NOT IP">No</Radio>
                       </Stack>
                     </RadioGroup>
                     <FormLabel>Head of the Family</FormLabel>
@@ -287,8 +348,8 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       defaultValue={is_head}
                       value={is_head}>
                       <Stack spacing={4} direction="row">
-                        <Radio value="YES">Yes</Radio>
-                        <Radio value="NO">No</Radio>
+                        <Radio value="HEAD">Yes</Radio>
+                        <Radio value="MEMBER">No</Radio>
                       </Stack>
                     </RadioGroup>
                   </Flex>
@@ -316,6 +377,7 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
               onClick={() => {
                 onClose();
                 setAge(calculateAge(birthday));
+                setLofY(calculatelengthofyear(length_of_year));
               }}>
               Cancel
             </Button>

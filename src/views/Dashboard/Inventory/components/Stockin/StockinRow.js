@@ -4,6 +4,13 @@ import {
   Icon,
   Flex,
   Text,
+  Table,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Thead,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
@@ -18,7 +25,18 @@ import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 import { useHistory } from "react-router-dom";
 
 function StockinRow(props) {
-  const { id, givenBy, donor, dateReceived, itemID, unit, qty } = props;
+  const {
+    entries,
+    setEntries,
+    id,
+    givenBy,
+    donor,
+    dateReceived,
+    itemID,
+    unit,
+    qty,
+    expir_date,
+  } = props;
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
@@ -30,8 +48,31 @@ function StockinRow(props) {
 
   const [itemName, setItemName] = useState("");
 
-  const addEntries = ItemList();
-  const entry1 = ItemList();
+  // const addEntries = ItemList();
+  // const entry1 = ItemList();
+
+  const [addEntries, setAddEntries] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setAddEntries(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [entry1, setEntry1] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setEntry1(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const selectedItem = entry1.find((item) => item.id === itemID);
 
   useEffect(() => {
@@ -44,7 +85,7 @@ function StockinRow(props) {
     }
   }, [selectedItem]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // document.body.style.overflow = "unset";
     // Specify how to clean up after this effect:
     return function cleanup() {};
@@ -69,9 +110,12 @@ function StockinRow(props) {
         })
       );
 
-      await StockinDelete(id);
-      onClose();
-      history.push("/admin/dashboard");
+      if (window.confirm("Are you sure you want to delete this item?")) {
+        await StockinDelete(id);
+        setEntries(entries.filter((item) => item.id !== id));
+      }
+      // onClose();
+      // history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -79,7 +123,7 @@ function StockinRow(props) {
 
   return (
     <>
-      <Box p="24px" bg={bgColor} my="15px" borderRadius="12px">
+      {/* <Box p="24px" bg={bgColor} my="15px" borderRadius="12px">
         <Flex justify="space-between" w="100%">
           <Flex direction="column" justify={"center"} maxWidth="70%">
             <Text color={nameColor} fontSize="md" fontWeight="bold" mb="10px">
@@ -147,16 +191,156 @@ function StockinRow(props) {
             </Button>
           </Flex>
         </Flex>
+      </Box> */}
+
+      <Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
+        <Flex direction="column" justify={"center"} maxWidth="100%">
+          <TableContainer maxH="50vh" overflowY="auto">
+            <Table
+              color={textColor}
+              variant="striped"
+              colorScheme="blue"
+              border="1">
+              <Tbody>
+                <Tr>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {itemName}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {givenBy}
+                    </Text>
+                  </Td>
+
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {dateReceived}
+                    </Text>
+                  </Td>
+
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {expir_date}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {unit}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "100px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Text color={textColor} cursor="pointer" p="12px">
+                      {qty}
+                    </Text>
+                  </Td>
+                  <Td
+                    style={{
+                      maxWidth: "140px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                    <Button
+                      p="0px"
+                      bg="transparent"
+                      mb={{ sm: "10px", md: "0px" }}
+                      me={{ md: "12px" }}
+                      onClick={() => handleDelete(id, itemID)}
+                      style={{
+                        maxWidth: "100px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Flex
+                        color="red.500"
+                        cursor="pointer"
+                        align="center"
+                        p="12px">
+                        <Icon as={FaTrashAlt} me="4px" />
+                        <Text fontSize="sm" fontWeight="semibold">
+                          DELETE
+                        </Text>
+                      </Flex>
+                    </Button>
+                    {/* </Td>
+                <Td style={{ maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}> */}
+                    <Button
+                      p="0px"
+                      bg="transparent"
+                      style={{
+                        maxWidth: "90px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Flex color={textColor} cursor="pointer" p="12px">
+                        <Icon as={FaPencilAlt} me="4px" />
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          onClick={onOpen}>
+                          EDIT
+                        </Text>
+                      </Flex>
+                    </Button>
+                  </Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Flex>
       </Box>
 
       <UpdateModal
         {...{
+          entries,
+          setEntries,
           addEntries,
           id,
           givenBy,
           donor,
           dateReceived,
           itemID,
+          expir_date,
           // unit,
           qty,
           isOpen,

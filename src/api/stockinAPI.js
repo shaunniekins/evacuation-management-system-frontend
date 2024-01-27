@@ -1,19 +1,8 @@
-import { useState, useEffect } from "react";
+export const StockinList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/stockin");
+  let data = await response.json();
 
-export const StockinList = () => {
-  const [entries, setEntries] = useState([]);
-
-  useEffect(() => {
-    getStockin();
-  }, []);
-
-  const getStockin = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/stockin");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 export const StockinAdd = async (
@@ -22,7 +11,8 @@ export const StockinAdd = async (
   dateReceived,
   item,
   // itemUnit,
-  qty
+  qty,
+  expir_date
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/stockin/", {
@@ -38,6 +28,7 @@ export const StockinAdd = async (
         dateReceived: dateReceived,
         item: item,
         qty: qty,
+        expir_date: expir_date,
       }),
     });
     const data = await response.json();
@@ -55,7 +46,8 @@ export const StockinUpdate = async (
   dateReceived,
   item,
   // itemUnit,
-  qty
+  qty,
+  expir_date
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/stockin/" + id, {
@@ -70,6 +62,7 @@ export const StockinUpdate = async (
         dateReceived: dateReceived,
         item: item,
         qty: qty,
+        expir_date: expir_date,
       }),
     });
     const data = await response.json();
@@ -82,19 +75,17 @@ export const StockinUpdate = async (
 };
 
 export const StockinDelete = (id) => {
-  if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/stockin/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+  fetch("http://127.0.0.1:8000/api/stockin/" + id, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then(() => {
+      console.log("Deleted!");
     })
-      .then(() => {
-        console.log("Deleted!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+    .catch((error) => {
+      console.log(error);
+    });
 };

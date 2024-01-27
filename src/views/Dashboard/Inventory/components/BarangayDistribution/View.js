@@ -5,6 +5,13 @@ import {
   Icon,
   Spacer,
   Text,
+  Table,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Thead,
   useColorModeValue,
 } from "@chakra-ui/react";
 // Custom components
@@ -53,7 +60,18 @@ const View = () => {
         entry.unit.toString().toLowerCase().includes(query.toLowerCase()))
   );
 
-  const addEntries = ItemList();
+  // const addEntries = ItemList();
+  // const [addEntries, setAddEntries] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchItems = async () => {
+  //     let data = await ItemList();
+  //     setAddEntries(data);
+  //   };
+
+  //   fetchItems();
+  // }, []);
+
   const inventoryEntries = InventoryList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -127,6 +145,78 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
+              <TableContainer maxH="50vh" overflowY="auto">
+                <Table
+                  color={textColor}
+                  variant="striped"
+                  colorScheme="blue"
+                  border="1">
+                  <Thead>
+                    <Th
+                      style={{
+                        maxWidth: "300px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Text
+                        color={textColor}
+                        cursor="pointer"
+                        p="12px"
+                        align={"center"}>
+                        ITEM
+                      </Text>
+                    </Th>
+                    <Th
+                      style={{
+                        maxWidth: "100px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Text
+                        color={textColor}
+                        cursor="pointer"
+                        p="12px"
+                        align={"center"}>
+                        BARANGAY
+                      </Text>
+                    </Th>
+                    <Th
+                      style={{
+                        maxWidth: "100px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Text
+                        color={textColor}
+                        cursor="pointer"
+                        p="12px"
+                        align={"center"}>
+                        Date Received
+                      </Text>
+                    </Th>
+                    <Th
+                      style={{
+                        maxWidth: "110px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                      <Text
+                        color={textColor}
+                        cursor="pointer"
+                        p="12px"
+                        align={"center"}>
+                        OPTION
+                      </Text>
+                    </Th>
+                  </Thead>
+                  <Tbody></Tbody>
+                </Table>
+              </TableContainer>
+
               {entries.map((row, index) => {
                 // console.log(row.unit);
                 return (
