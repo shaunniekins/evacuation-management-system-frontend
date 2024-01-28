@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Box,
@@ -51,8 +51,29 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const evacueesList = resEvacList();
   const calamityList = CalamityList();
   const residentEntries = EvacueeList();
-  const repackedList = RepackedList();
-  const barangayInventoryList = BarangayInventoryList();
+
+  const [repackedList, setRepackedList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await RepackedList();
+      setRepackedList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayInventoryList();
+      setBarangayInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const evacueeDistributeList = evacDistributeList();
 
   let { userPosition, userBarangay } = useContext(AuthContext);
@@ -141,6 +162,9 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     return `Packs #${count++} ✖ ${instance} items`;
   };
 
+  const [calamitySelected, setCalamitySelected] = useState(false);
+  const [selectedCalamity, setSelectedCalamity] = useState(null);
+
   const handleSelectChange = (event) => {
     const selectedValue = parseInt(event.target.value);
     setDisplayName(selectedValue);
@@ -161,8 +185,18 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     setItemIDValue(selectedID);
   };
 
+  const [selectedRole, setSelectedRole] = useState("");
+  const [sectionHead, setSectionHead] = useState("");
+
+  // Filter residentEntries to get only section heads
+  const sectionHeads = residentEntries.filter(
+    (entry) => entry.is_head.toLowerCase() === "head"
+  );
+
   const uniqueEvacuees = [];
   const uniqueEvacueesSet = new Set();
+
+  // console.log("evacueesList", evacueesList);
 
   // Loop through the evacueesList and add unique values to uniqueEvacuees array
   evacueesList.forEach((entry) => {
@@ -172,13 +206,55 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
     }
   });
 
-  const [selectedRole, setSelectedRole] = useState("");
-  const [sectionHead, setSectionHead] = useState("");
+  // For selection of evacuees based on household_num (distributed)
+  console.log("selectedCalamity:", selectedCalamity);
+  // console.log("evacueeDistributeList:", evacueeDistributeList);
+  // console.log("residentEntries:", residentEntries);
 
-  // Filter residentEntries to get only section heads
-  const sectionHeads = residentEntries.filter(
-    (entry) => entry.is_head.toLowerCase() === "head"
+  // Create a set of household_num that have already been distributed for the selected calamity
+  const distributedHouseholds = new Set(
+    evacueeDistributeList
+      .filter((evacuee) => {
+        // console.log(
+        //   "evacuee.is_distributed === 1",
+        //   evacuee.is_distributed === 1
+        // );
+        // console.log(
+        //   "evacuee.calamity === selectedCalamity",
+        //   evacuee.calamity === selectedCalamity
+        // );
+        return (
+          evacuee.is_distributed === 1 && evacuee.calamity === selectedCalamity
+        );
+      })
+      .map((evacuee) => {
+        const resident = residentEntries.find(
+          (resident) => resident.id === Number(evacuee.evacuee)
+        );
+        // console.log("evacuee:", evacuee);
+        // console.log("found resident:", resident);
+        return resident && resident.household_num
+          ? resident.household_num
+          : null;
+      })
   );
+
+  // console.log("distributedHouseholds:", distributedHouseholds);
+
+  // Filter uniqueEvacuees
+  const filteredEvacuees = uniqueEvacuees.filter((entry) => {
+    const resident = residentEntries.find(
+      (resident) => resident.id === entry.resident
+    );
+    return (
+      resident &&
+      resident.barangay === userBarangay &&
+      resident.household_num &&
+      !distributedHouseholds.has(resident.household_num)
+    );
+  });
+
+  // console.log("filteredEvacuees:", filteredEvacuees);
 
   return (
     <Modal
@@ -230,65 +306,63 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
               </CardBody>
             </Card>
             <FormControl>
-              <FormLabel>Evacuee</FormLabel>
-              <Flex justify={"space-between"} gap={2}>
-                <Select
-                  required
-                  id="evacuee-field"
-                  name="evacuee"
-                  placeholder="--Select option--"
-                  onChange={handleSelectChange}>
-                  {uniqueEvacuees
-                    .filter((entry) => {
-                      const resident = residentEntries.find(
-                        (resident) => resident.id === entry.resident
-                      );
-                      return resident && resident.barangay === userBarangay;
-                    })
-                    .map((entry) => {
-                      const resident = residentEntries.find(
-                        (resident) => resident.id === entry.resident
-                      );
-                      const residentName = resident
-                        ? `${resident.first_name} ${resident.last_name}`
-                        : "";
-                      return (
-                        <option
-                          key={entry.id}
-                          value={entry.resident}
-                          data-id={entry.resident}>
-                          {residentName}
-                        </option>
-                      );
-                    })}
-                </Select>
-                <Input
-                  required
-                  disabled
-                  // w={"2rem"}
-                  type="text"
-                  id="isHead-field"
-                  name="isHead"
-                  ref={initialRef}
-                  placeholder="Function"
-                  w={"30%"}
-                  value={unitValue}
-                />
-              </Flex>
               <FormLabel>Calamity</FormLabel>
               <Select
                 required
                 id="calamity-field"
                 name="calamity"
                 placeholder="--Select option--"
-                // onChange={handleSelectChange}
-              >
+                onChange={(event) => {
+                  setCalamitySelected(true);
+                  setSelectedCalamity(event.target.value);
+                }}>
                 {calamityList.map((entry) => (
                   <option key={entry.id} value={entry.name} data-id={entry.id}>
                     {entry.name}
                   </option>
                 ))}
               </Select>
+              {calamitySelected && (
+                <>
+                  <FormLabel>Evacuee</FormLabel>
+                  <Flex justify={"space-between"} gap={2}>
+                    <Select
+                      required
+                      id="evacuee-field"
+                      name="evacuee"
+                      placeholder="--Select option--"
+                      onChange={handleSelectChange}>
+                      {filteredEvacuees.map((entry) => {
+                        const resident = residentEntries.find(
+                          (resident) => resident.id === entry.resident
+                        );
+                        const residentName = resident
+                          ? `${resident.first_name} ${resident.last_name}`
+                          : "";
+                        return (
+                          <option
+                            key={entry.id}
+                            value={entry.resident}
+                            data-id={entry.resident}>
+                            {residentName}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                    <Input
+                      required
+                      disabled
+                      type="text"
+                      id="isHead-field"
+                      name="isHead"
+                      ref={initialRef}
+                      placeholder="Function"
+                      w={"30%"}
+                      value={unitValue}
+                    />
+                  </Flex>
+                </>
+              )}
               <FormLabel>Item</FormLabel>
               <Select
                 required

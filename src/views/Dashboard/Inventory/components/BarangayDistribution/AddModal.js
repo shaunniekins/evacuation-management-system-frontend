@@ -33,7 +33,8 @@ import { BarangayInventoryUpdate } from "api/inventoryPerBarangayAPI";
 import { useHistory } from "react-router-dom";
 
 const AddModal = ({
-  // inventoryEntries,
+  entries,
+  setEntries,
   isOpen,
   onClose,
   initialRef,
@@ -53,9 +54,38 @@ const AddModal = ({
     fetchItems();
   }, []);
 
-  const inventoryList = InventoryList();
-  const barangayEntry = BarangayList();
-  const barangayInventoryList = BarangayInventoryList();
+  const [inventoryList, setInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await InventoryList();
+      setInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayList, setBarangayList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayInventoryList();
+      setBarangayInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
 
   const [unitValue, setUnitValue] = useState("");
 
@@ -237,7 +267,7 @@ const AddModal = ({
         }
 
         onClose();
-        history.push("/admin/dashboard");
+        // history.push("/admin/dashboard");
       }
     } catch (error) {
       alert(`Failed: ${error}`);
@@ -297,7 +327,7 @@ const AddModal = ({
                 id="barangay-field"
                 name="barangay"
                 placeholder="-- Select barangay --">
-                {barangayEntry.map((entry) => (
+                {barangayList.map((entry) => (
                   <option key={entry.id} value={entry.id} data-id={entry.id}>
                     {entry.name}
                   </option>

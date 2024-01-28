@@ -78,19 +78,17 @@ export const cashDonationUpdate = async (
 };
 
 export const cashDonationDelete = (id) => {
-  if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/cashdonation/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+  fetch("http://127.0.0.1:8000/api/cashdonation/" + id, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then(() => {
+      alert("Deleted!");
     })
-      .then(() => {
-        alert("Deleted!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+    .catch((error) => {
+      console.log(error);
+    });
 };

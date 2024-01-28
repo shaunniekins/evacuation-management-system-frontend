@@ -44,10 +44,9 @@ export const StockinUpdate = async (
   givenBy,
   donor,
   dateReceived,
+  expir_date,
   item,
-  // itemUnit,
-  qty,
-  expir_date
+  qty
 ) => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/stockin/" + id, {
@@ -60,9 +59,9 @@ export const StockinUpdate = async (
         givenBy: givenBy,
         donor: donor,
         dateReceived: dateReceived,
+        expir_date: expir_date,
         item: item,
         qty: qty,
-        expir_date: expir_date,
       }),
     });
     const data = await response.json();

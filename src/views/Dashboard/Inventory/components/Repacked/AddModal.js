@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Box,
@@ -49,8 +49,27 @@ const AddModal = ({
   // console.log("userBarangay: ", userBarangay);
 
   const inventoryList = InventoryList();
-  const barangayInventoryList = BarangayInventoryList();
-  const barangayList = BarangayList();
+
+  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayInventoryList();
+      setBarangayInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
 
   const [unitValue, setUnitValue] = useState("");
 

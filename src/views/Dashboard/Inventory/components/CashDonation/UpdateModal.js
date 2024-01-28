@@ -19,19 +19,23 @@ import { cashDonationList } from "api/cashDonationAPI";
 const UpdateModal = ({
   entries,
   setEntries,
-  id,
-  controlNumber,
-  givenBy,
-  donor,
-  amount,
-  modeOfTransfer,
-  date,
-  isOpen,
-  onClose,
+  // id,
+  // controlNumber,
+  // givenBy,
+  // donor,
+  // amount,
+  // modeOfTransfer,
+  // date,
+  isOpen: isOpenUpdateModal,
+  onClose: onCloseUpdateModal,
   initialRef,
   finalRef,
+  selectedRow,
 }) => {
   const history = useHistory();
+
+  const { id, controlNumber, givenBy, donor, amount, modeOfTransfer, date } =
+    selectedRow || {};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -48,7 +52,7 @@ const UpdateModal = ({
       const updatedItems = await cashDonationList();
       setEntries(updatedItems);
 
-      onClose();
+      onCloseUpdateModal();
     } catch (error) {
       alert("Failed");
     }
@@ -58,8 +62,8 @@ const UpdateModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpenUpdateModal}
+      onClose={onCloseUpdateModal}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -140,7 +144,7 @@ const UpdateModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Update
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onCloseUpdateModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

@@ -20,8 +20,8 @@ import { cashDonationList } from "api/cashDonationAPI";
 const AddModal = ({
   entries,
   setEntries,
-  isOpen,
-  onClose,
+  isOpen: isOpenAddModal,
+  onClose: onCloseAddModal,
   initialRef,
   finalRef,
 }) => {
@@ -40,7 +40,7 @@ const AddModal = ({
       ); // call the API function
       const updatedItems = await cashDonationList();
       setEntries(updatedItems);
-      onClose();
+      onCloseAddModal();
     } catch (error) {
       alert("Failed");
     }
@@ -53,8 +53,8 @@ const AddModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpenAddModal}
+      onClose={onCloseAddModal}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -127,7 +127,7 @@ const AddModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Add
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onCloseAddModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

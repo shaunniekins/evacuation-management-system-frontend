@@ -23,33 +23,19 @@ import { StockinList } from "api/stockinAPI";
 const UpdateModal = ({
   entries,
   setEntries,
+  inventoryList,
+  setInventoryList,
   addEntries,
-  id,
-  givenBy,
-  donor,
-  dateReceived,
-  itemID,
-  expir_date,
-  // unit,
-  qty,
-  isOpen,
-  onClose,
+  isOpen: isOpenUpdateModal,
+  onClose: onCloseUpdateModal,
   initialRef,
   finalRef,
+  selectedRow,
 }) => {
-  // const [inventoryList, setInventoryList] = useState([]);
+  const { id, givenBy, donor, dateReceived, item, expir_date, qty } =
+    selectedRow || {};
 
-  // useEffect(() => {
-  //   const fetchItems = async () => {
-  //     let data = await InventoryList();
-  //     setInventoryList(data);
-  //   };
-
-  //   fetchItems();
-  // }, []);
-  const inventoryList = InventoryList();
-
-  // console.log("AddEntries: ", addEntries);
+  let itemID = item;
   const history = useHistory();
 
   const handleSubmit = async (event) => {
@@ -60,50 +46,44 @@ const UpdateModal = ({
     const dateReceived = event.target.dateReceived.value;
     const itemIDValueSubmit = itemIDValue;
     const expir_date = event.target.expir_date.value;
-    const preQty = qty;
-    const newQty = event.target.qty.value;
+    const preQty = parseFloat(parseFloat(qty).toFixed(1));
+    const newQty = parseFloat(parseFloat(event.target.qty.value).toFixed(1));
 
     try {
-      const result = await StockinUpdate(
+      await StockinUpdate(
         id,
         givenBy,
         donor,
         dateReceived,
         expir_date,
-        // event.target.item.value,
         itemIDValueSubmit,
-        // event.target.unit.value,
         newQty
-      ); // call the API function
+      );
     } catch (error) {
       alert("Failed");
+      console.log("error", error);
     }
 
     try {
       if (inventoryList) {
         inventoryList.map(async (entry) => {
-          // if (entry.item === parseInt(itemIDValueSubmit)) {
-          let computedQty =
-            parseFloat(entry.qty) - parseFloat(preQty) + parseFloat(newQty);
-          const resultInventory = await InventoryUpdate(
-            entry.id,
-            itemIDValueSubmit,
-            computedQty
-          );
-          // }
+          if (entry.item === parseInt(itemIDValueSubmit)) {
+            let computedQty = entry.qty - preQty + newQty;
+            await InventoryUpdate(entry.id, itemIDValueSubmit, computedQty);
+          }
         });
       }
 
       const updatedItems = await StockinList();
       setEntries(updatedItems);
 
-      onClose();
+      onCloseUpdateModal();
     } catch (error) {
       alert("Failed");
+      console.log("error", error);
     }
   };
   const [itemName, setItemName] = useState("");
-  const [itemUnit, setItemUnit] = useState("");
   const [unitValue, setUnitValue] = useState("itemUnit");
 
   // const entry1 = ItemList();
@@ -129,9 +109,14 @@ const UpdateModal = ({
       setUnitValue("");
     }
   }, [selectedItem]);
+
   const [itemIDValue, setItemIDValue] = useState(itemID);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    setItemIDValue(itemID);
+  }, [itemID]);
+
+  useEffect(() => {
     // document.body.style.overflow = "unset";
     // Specify how to clean up after this effect:
     return function cleanup() {};
@@ -154,7 +139,8 @@ const UpdateModal = ({
     }
 
     const selectedOption = event.target.options[event.target.selectedIndex];
-    const selectedID = selectedOption.getAttribute("data-id");
+    const selectedID = parseInt(selectedOption.getAttribute("data-id"));
+    // console.log("selectedID: ", selectedID);
     setItemIDValue(selectedID);
   };
 
@@ -162,8 +148,8 @@ const UpdateModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpenUpdateModal}
+      onClose={onCloseUpdateModal}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -288,7 +274,7 @@ const UpdateModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Update
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onCloseUpdateModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

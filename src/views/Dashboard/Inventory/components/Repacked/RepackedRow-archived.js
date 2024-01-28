@@ -45,10 +45,38 @@ function RepackedRow(props) {
   const finalRef = React.useRef(null);
   const history = useHistory();
 
-  const entry1 = ItemList();
+  const [entry1, setEntry1] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setEntry1(data);
+    };
+
+    fetchItems();
+  }, []);
   const inventoryList = InventoryList();
-  const barangayInventoryList = BarangayInventoryList();
-  const barangayList = BarangayList();
+
+  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayInventoryList();
+      setBarangayInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
 
   React.useEffect(() => {
     // document.body.style.overflow = "unset";

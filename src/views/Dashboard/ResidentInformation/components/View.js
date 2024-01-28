@@ -1,5 +1,5 @@
 // Chakra imports
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {
   Flex,
@@ -108,11 +108,20 @@ function View() {
     handleChange(event); // Call handleChange to update formData state as well
   };
 
-  const barangayEntries = BarangayList();
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const municipalityEntries = MunicipalityList();
   const [filteredBarangayEntries, setFilteredBarangayEntries] = useState([]);
 
-  // console.log("Barangays: ", barangayEntries);
+  // console.log("Barangays: ", barangayList);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -120,7 +129,7 @@ function View() {
 
     if (name === "municipality") {
       // Filter barangay entries based on the selected municipality
-      const filteredBarangays = barangayEntries.filter(
+      const filteredBarangays = barangayList.filter(
         (barangay) => barangay.municipality === value
       );
       setFilteredBarangayEntries(filteredBarangays);

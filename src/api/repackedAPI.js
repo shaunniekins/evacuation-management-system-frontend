@@ -1,19 +1,8 @@
-import { useState, useEffect } from "react";
+export const RepackedList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/repacked");
+  let data = await response.json();
 
-export const RepackedList = () => {
-  const [entries, setEntries] = useState([]);
-
-  useEffect(() => {
-    getRepacked();
-  }, []);
-
-  const getRepacked = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/repacked");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 export const RepackedAdd = async (
@@ -83,19 +72,17 @@ export const RepackedUpdate = async (
 };
 
 export const RepackedDelete = (id) => {
-  if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/repacked/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+  fetch("http://127.0.0.1:8000/api/repacked/" + id, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then(() => {
+      console.log("Deleted!");
     })
-      .then(() => {
-        console.log("Deleted!");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+    .catch((error) => {
+      console.log(error);
+    });
 };

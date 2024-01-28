@@ -18,9 +18,9 @@ import {
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
@@ -31,6 +31,10 @@ import { ItemList } from "api/itemAPI";
 import { InventoryList } from "api/inventoryAPI";
 import { BarangayInventoryList } from "api/inventoryPerBarangayAPI";
 import { DistributeBarangayInventoryList } from "api/distributeBarangayAPI";
+import { BarangayInventoryUpdate } from "api/inventoryPerBarangayAPI";
+import { DistributeBarangayInventoryDelete } from "api/distributeBarangayAPI";
+import { InventoryUpdate } from "api/inventoryAPI";
+import { BarangayList } from "api/barangayAPI";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -52,13 +56,27 @@ const View = () => {
   //     entry.unit.toLowerCase().includes(query.toLowerCase())
   // );
 
-  const entries = DistributeBarangayInventoryList().filter(
-    (entry) =>
-      (entry.item &&
-        entry.item.toString().toLowerCase().includes(query.toLowerCase())) ||
-      (entry.unit &&
-        entry.unit.toString().toLowerCase().includes(query.toLowerCase()))
-  );
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await DistributeBarangayInventoryList();
+
+      const filteredEntries = data.filter(
+        (entry) =>
+          (entry.item &&
+            entry.item
+              .toString()
+              .toLowerCase()
+              .includes(query.toLowerCase())) ||
+          (entry.unit &&
+            entry.unit.toString().toLowerCase().includes(query.toLowerCase()))
+      );
+      setEntries(filteredEntries);
+    };
+
+    fetchItems();
+  }, [query]);
 
   // const addEntries = ItemList();
   // const [addEntries, setAddEntries] = useState([]);
@@ -72,12 +90,101 @@ const View = () => {
   //   fetchItems();
   // }, []);
 
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const fetchedItems = await ItemList();
+      setItems(fetchedItems);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const inventoryEntries = InventoryList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+
+  const columns = ["ITEM", "QUANTITY", "BARANGAY", "DATE RECEIVED", "ACTION"];
+
+  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayInventoryList();
+      setBarangayInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [inventoryList, setInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await InventoryList();
+      setInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const handleDelete = async (id, item, qty, barangay, unit) => {
+    const itemIDValueSubmit = parseInt(item);
+    const preQty = qty;
+
+    try {
+      await Promise.all(
+        inventoryList.map(async (entry) => {
+          if (parseInt(entry.item) === parseInt(item)) {
+            // console.log("entry.id", entry.id);
+            let computedQty = parseFloat(entry.qty) + parseFloat(preQty);
+
+            await InventoryUpdate(
+              parseInt(entry.id),
+              itemIDValueSubmit,
+              computedQty
+            );
+          }
+        })
+      );
+    } catch (error) {
+      alert("Failed");
+      console.log("error", error);
+    }
+
+    try {
+      barangayInventoryList.forEach((entry) => {
+        let computedQty = entry.qty - preQty;
+
+        if (entry.item === item) {
+          BarangayInventoryUpdate(entry.id, item, unit, computedQty, barangay);
+        }
+      });
+    } catch (error) {
+      alert("Failed");
+    }
+
+    try {
+      await DistributeBarangayInventoryDelete(id);
+      setEntries((prevEntries) => prevEntries.filter((item) => item.id !== id));
+    } catch (error) {
+      alert("Failed");
+    }
+  };
 
   return (
     <>
@@ -152,72 +259,82 @@ const View = () => {
                   colorScheme="blue"
                   border="1">
                   <Thead>
-                    <Th
-                      style={{
-                        maxWidth: "300px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
-                      <Text
-                        color={textColor}
-                        cursor="pointer"
-                        p="12px"
-                        align={"center"}>
-                        ITEM
-                      </Text>
-                    </Th>
-                    <Th
-                      style={{
-                        maxWidth: "100px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
-                      <Text
-                        color={textColor}
-                        cursor="pointer"
-                        p="12px"
-                        align={"center"}>
-                        BARANGAY
-                      </Text>
-                    </Th>
-                    <Th
-                      style={{
-                        maxWidth: "100px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
-                      <Text
-                        color={textColor}
-                        cursor="pointer"
-                        p="12px"
-                        align={"center"}>
-                        Date Received
-                      </Text>
-                    </Th>
-                    <Th
-                      style={{
-                        maxWidth: "110px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
-                      <Text
-                        color={textColor}
-                        cursor="pointer"
-                        p="12px"
-                        align={"center"}>
-                        OPTION
-                      </Text>
-                    </Th>
+                    {columns.map((column) => (
+                      <Th
+                        key={column}
+                        style={{
+                          maxWidth: "100px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          textAlign: "center",
+                        }}>
+                        <Text>{column}</Text>
+                      </Th>
+                    ))}
                   </Thead>
-                  <Tbody></Tbody>
+                  <Tbody>
+                    {entries.reverse().map((row, index) => {
+                      return (
+                        <Tr key={index}>
+                          <Td style={{ textAlign: "center" }}>
+                            {items.find((item) => item.id === row.item)?.name ||
+                              row.item}
+                          </Td>
+                          <Td style={{ textAlign: "center" }}>{row.qty}</Td>
+                          <Td style={{ textAlign: "center" }}>
+                            {barangayList.find(
+                              (barangay) => barangay.id === row.barangay
+                            )?.name || row.barangay}
+                          </Td>
+                          <Td style={{ textAlign: "center" }}>{row.date}</Td>
+                          <Td
+                            alignItems={"center"}
+                            style={{
+                              maxWidth: "10px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}>
+                            <Button
+                              p="0px"
+                              bg="transparent"
+                              mb={{ sm: "10px", md: "0px" }}
+                              me={{ md: "12px" }}
+                              onClick={() => {
+                                if (window.confirm("Are you sure?")) {
+                                  handleDelete(
+                                    row.id,
+                                    row.item,
+                                    row.qty,
+                                    row.barangay,
+                                    row.unit
+                                  );
+                                }
+                              }}
+                              style={{
+                                maxWidth: "100px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}>
+                              <Flex color="red.500" cursor="pointer" p="12px">
+                                <Icon as={FaTrashAlt} me="4px" />
+                                {/* <Text fontSize="sm" fontWeight="semibold">
+                                    DELETE
+                                  </Text> */}
+                              </Flex>
+                            </Button>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
                 </Table>
               </TableContainer>
 
-              {entries.map((row, index) => {
+              {/* {entries.map((row, index) => {
                 // console.log(row.unit);
                 return (
                   <DistributeBarangayRow
@@ -237,23 +354,22 @@ const View = () => {
                     // unit={row.unit}
                   />
                 );
-              })}
+              })} */}
             </Flex>
           </Flex>
         </CardBody>
       </Card>
       {/* {addEntries.map((row, index) => ( */}
       <AddModal
-        // key={index}
-        // itemName={row.name}
-        // itemUnit={row.unit}
-        // inventoryEntries={addEntries}
-        isOpen={isOpen}
-        onClose={onClose}
-        initialRef={initialRef}
-        finalRef={finalRef}
+        {...{
+          entries,
+          setEntries,
+          isOpen,
+          onClose,
+          initialRef,
+          finalRef,
+        }}
       />
-      {/* ))} */}
     </>
   );
 };

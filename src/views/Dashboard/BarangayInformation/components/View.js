@@ -11,7 +11,7 @@ import {
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React from "react";
+import React, { useEffect } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
@@ -29,11 +29,24 @@ const View = () => {
   );
   const [query, setQuery] = useState("");
 
-  const entries = BarangayList().filter(
-    (entry) =>
-      entry.name.toLowerCase().includes(query.toLowerCase()) ||
-      entry.municipality.toLowerCase().includes(query.toLowerCase())
-  );
+  const [entries, setEntries] = useState([]);
+  const [barangayList, setBarangayList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+
+      const filteredEntries = data.filter(
+        (entry) =>
+          entry.name.toLowerCase().includes(query.toLowerCase()) ||
+          entry.municipality.toLowerCase().includes(query.toLowerCase())
+      );
+
+      setEntries(filteredEntries);
+    };
+
+    fetchItems();
+  }, [setBarangayList]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 

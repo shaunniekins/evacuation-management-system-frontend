@@ -29,7 +29,17 @@ export default function Dashboard() {
 
   const evacList = resEvacList();
   const evacueeList = EvacueeList();
-  const barangayList = BarangayList();
+
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const evacuationCenterList = EvacuationCenterList();
   const evacuationCenterListLeftRemaining = EvacuationCenterList();
 

@@ -1,19 +1,8 @@
-import { useState, useEffect } from "react";
+export const BarangayList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/barangay");
+  let data = await response.json();
 
-export const BarangayList = () => {
-  const [entries, setEntries] = useState([]);
-
-  useEffect(() => {
-    getBarangay();
-  }, []);
-
-  const getBarangay = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/barangay");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 export const BarangayAdd = async (name, municipality) => {

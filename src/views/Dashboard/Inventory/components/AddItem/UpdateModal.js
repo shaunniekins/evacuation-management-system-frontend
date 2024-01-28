@@ -20,14 +20,14 @@ import { ItemList } from "api/itemAPI";
 const UpdateModal = ({
   entries,
   setEntries,
-  id,
-  name,
-  unit,
-  isOpen,
-  onClose,
+  isOpen: isOpenUpdateModal,
+  onClose: onCloseUpdateModal,
   initialRef,
   finalRef,
+  selectedRow,
 }) => {
+  const { id, name, unit } = selectedRow || {};
+
   const history = useHistory();
 
   const handleSubmit = async (event) => {
@@ -41,7 +41,7 @@ const UpdateModal = ({
       const updatedItems = await ItemList();
       setEntries(updatedItems);
 
-      onClose();
+      onCloseUpdateModal();
     } catch (error) {
       alert("Failed");
     }
@@ -51,8 +51,8 @@ const UpdateModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpenUpdateModal}
+      onClose={onCloseUpdateModal}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -88,7 +88,7 @@ const UpdateModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Update
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onCloseUpdateModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

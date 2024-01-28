@@ -1,19 +1,8 @@
-import { useState, useEffect } from "react";
+export const BarangayInventoryList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/barangayinventory");
+  let data = await response.json();
 
-export const BarangayInventoryList = () => {
-  const [entries, setEntries] = useState([]);
-
-  useEffect(() => {
-    getItem();
-  }, []);
-
-  const getItem = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/barangayinventory");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 export const BarangayInventoryAdd = async (item, unit, qty, barangay) => {

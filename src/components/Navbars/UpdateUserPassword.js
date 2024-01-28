@@ -25,7 +25,6 @@ import {
 import { UserUpdate } from "api/usersAPI";
 import { getBarangayList, getMunicipalityList } from "api/getListAPI";
 import { MunicipalityList } from "api/municipalityAPI";
-import { BarangayList } from "api/barangayAPI";
 
 const UpdateModal = ({}) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);

@@ -21,13 +21,12 @@ import { useHistory } from "react-router-dom";
 import { StockinList } from "api/stockinAPI";
 
 const AddModal = ({
-  // addEntries,
-  // itemName,
-  // itemUnit,
   entries,
   setEntries,
-  isOpen,
-  onClose,
+  inventoryList,
+  setInventoryList,
+  isOpen: isOpenAddModal,
+  onClose: onCloseAddModal,
   initialRef,
   finalRef,
 }) => {
@@ -44,7 +43,18 @@ const AddModal = ({
 
   const history = useHistory();
 
-  const inventoryList = InventoryList();
+  // const inventoryList = InventoryList();
+
+  // const [inventoryList, setInventoryList] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchItems = async () => {
+  //     let data = await InventoryList();
+  //     setInventoryList(data);
+  //   };
+
+  //   fetchItems();
+  // }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -71,25 +81,27 @@ const AddModal = ({
     try {
       let itemExists = false;
 
-      inventoryList.map(async (entry) => {
+      await inventoryList.reduce(async (promise, entry) => {
+        await promise;
         if (entry.item === parseInt(itemIDValueSubmit)) {
           itemExists = true;
           const newQty = parseFloat(entry.qty) + parseFloat(qty);
-          const resultInventory = await InventoryUpdate(
-            entry.id,
-            itemIDValueSubmit,
-            newQty
-          );
+          await InventoryUpdate(entry.id, itemIDValueSubmit, newQty);
         }
-      });
+      }, Promise.resolve());
 
       if (!itemExists) {
-        const resultInventory = await InventoryAdd(itemIDValueSubmit, qty);
+        await InventoryAdd(itemIDValueSubmit, qty);
       }
+
+      // Fetch the updated inventory list from the server
+      const updatedInventoryList = await InventoryList();
+      // Update the inventoryList state
+      setInventoryList(updatedInventoryList);
 
       const updatedItems = await StockinList();
       setEntries(updatedItems);
-      onClose();
+      onCloseAddModal();
       // history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
@@ -124,8 +136,8 @@ const AddModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpenAddModal}
+      onClose={onCloseAddModal}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -220,7 +232,7 @@ const AddModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Add
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onCloseAddModal}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

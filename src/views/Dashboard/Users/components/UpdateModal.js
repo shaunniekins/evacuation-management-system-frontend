@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Button,
@@ -58,13 +58,23 @@ const UpdateModal = ({
   const usernames = usersList.map((list) => {
     return list.username;
   });
-  const barangayEntries = BarangayList();
+
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
+
   const municipalityEntries = MunicipalityList();
   const [barangays, setBarangays] = useState([{ name: barangay }]);
 
   const handleMunicipalityChange = (event) => {
     const selectedMunicipality = event.target.value;
-    const filteredBarangays = barangayEntries.filter(
+    const filteredBarangays = barangayList.filter(
       (barangay) => barangay.municipality === selectedMunicipality
     );
     setBarangays(filteredBarangays);
@@ -191,7 +201,7 @@ const UpdateModal = ({
                     name="barangay"
                     defaultValue={barangay}
                     placeholder="-- Select barangay --">
-                    {barangayEntries.map((barangay, index) => (
+                    {barangayList.map((barangay, index) => (
                       <option key={index} value={barangay.name}>
                         {barangay.name}
                       </option>

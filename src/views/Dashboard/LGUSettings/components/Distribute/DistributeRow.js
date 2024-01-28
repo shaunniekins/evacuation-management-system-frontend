@@ -43,7 +43,16 @@ function DistributeRow(props) {
   const finalRef = React.useRef(null);
 
   const [itemName, setItemName] = useState("");
-  const repackedList = RepackedList();
+  const [repackedList, setRepackedList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await RepackedList();
+      setRepackedList(data);
+    };
+
+    fetchItems();
+  }, []);
 
   // const entry1 = ItemList();
 

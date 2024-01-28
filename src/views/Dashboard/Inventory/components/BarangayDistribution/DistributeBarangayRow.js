@@ -40,8 +40,27 @@ function DistributeBarangayRow(props) {
   const finalRef = React.useRef(null);
 
   const itemEntry = ItemList();
-  const barangayEntry = BarangayList();
-  const barangayInventoryList = BarangayInventoryList();
+
+  const [barangayList, setBarangayList] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayList();
+      setBarangayList(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await BarangayInventoryList();
+      setBarangayInventoryList(data);
+    };
+
+    fetchItems();
+  }, []);
 
   useEffect(() => {
     // document.body.style.overflow = "unset";
@@ -56,7 +75,7 @@ function DistributeBarangayRow(props) {
     );
   }
 
-  const matchingBarangayEntry = barangayEntry.find(
+  const matchingbarangayList = barangayList.find(
     (entry) => parseInt(entry.id) === parseInt(barangay)
   );
 
@@ -146,7 +165,7 @@ function DistributeBarangayRow(props) {
                     cursor="pointer"
                     p="12px"
                     align={"center"}>
-                    {matchingBarangayEntry ? matchingBarangayEntry.name : ""}
+                    {matchingbarangayList ? matchingbarangayList.name : ""}
                   </Text>
                 </Td>
                 <Td
@@ -218,7 +237,7 @@ function DistributeBarangayRow(props) {
     //         <Text color="gray.400" fontSize="sm" fontWeight="semibold">
     //           Barangay:{" "}
     //           <Text as="span" color="gray.500">
-    //             {matchingBarangayEntry ? matchingBarangayEntry.name : ""}
+    //             {matchingbarangayList ? matchingbarangayList.name : ""}
     //           </Text>
     //         </Text>
     //         <Text color="gray.400" fontSize="sm" fontWeight="semibold">

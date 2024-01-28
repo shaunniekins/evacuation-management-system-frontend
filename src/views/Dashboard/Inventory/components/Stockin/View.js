@@ -21,13 +21,17 @@ import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-import StockinRow from "./StockinRow";
+// import StockinRow from "./StockinRow-archived";
 import { StockinList } from "api/stockinAPI";
 import { ItemList } from "api/itemAPI";
+import UpdateModal from "./UpdateModal";
+import { InventoryList } from "api/inventoryAPI";
+import { StockinDelete } from "api/stockinAPI";
+import { InventoryUpdate } from "api/inventoryAPI";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -53,17 +57,100 @@ const View = () => {
           entry.item.toLowerCase().includes(query.toLowerCase())
       );
       setEntries(filteredEntries);
+      // console.log("filteredEntries", filteredEntries);
     };
 
     fetchItems();
   }, [query]);
 
-  // const addEntries = ItemList();
+  const [addEntries, setAddEntries] = useState([]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await ItemList();
+      setAddEntries(data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const {
+    isOpen: isOpenAddModal,
+    onOpen: onOpenAddModal,
+    onClose: onCloseAddModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenUpdateModal,
+    onOpen: onOpenUpdateModal,
+    onClose: onCloseUpdateModal,
+  } = useDisclosure();
+
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleEditClick = (row) => {
+    setSelectedRow(row);
+    onOpenUpdateModal();
+  };
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+
+  const [inventoryList, setInventoryList] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      let data = await InventoryList();
+      setInventoryList(data);
+      // console.log("data", data);
+    };
+
+    fetchItems();
+  }, []);
+
+  const handleDelete = async (id, itemID, qty) => {
+    // const itemIDValueSubmit = itemID;
+    const preQty = qty;
+
+    try {
+      for (const entry of inventoryList) {
+        // console.log("entry.id", entry.item);
+        // console.log("itemID", itemID);
+
+        if (parseInt(entry.item) === parseInt(itemID)) {
+          let computedQty = parseFloat(entry.qty) - parseFloat(preQty);
+          await InventoryUpdate(entry.id, itemID, computedQty);
+        }
+      }
+
+      await StockinDelete(id);
+      setEntries(entries.filter((item) => item.id !== id));
+    } catch (error) {
+      alert("Failed");
+      console.log(error);
+    }
+  };
+
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const fetchedItems = await ItemList();
+      setItems(fetchedItems);
+    };
+
+    fetchItems();
+  }, []);
+
+  const columns = [
+    "ITEM",
+    "from Organization",
+    "DATE RECEIVED",
+    "EXPIRATION DATE",
+    "UNIT",
+    "QUANTITY",
+    "ACTION",
+  ];
 
   return (
     <>
@@ -82,7 +169,7 @@ const View = () => {
               color="white"
               fontSize="xs"
               variant="no-hover"
-              onClick={onOpen}>
+              onClick={onOpenAddModal}>
               ADD NEW
             </Button>
           </Flex>
@@ -131,102 +218,119 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
-              <Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
-                <Flex direction="column" justify={"center"} maxWidth="100%">
-                  <TableContainer maxH="50vh" overflowY="auto">
-                    <Table
-                      color={textColor}
-                      variant="striped"
-                      colorScheme="blue"
-                      border="1"
-                      direction="column"
-                      justify={"center"}
-                      maxWidth="100%">
-                      <Thead>
+              {/* <Box p="0px" my="5px" borderRadius="12px"> */}
+              <Flex direction="column" w="100%">
+                <TableContainer
+                  maxH="50vh"
+                  overflowY="auto"
+                  overflowX="auto"
+                  align={"center"}
+                  rounded="15px"
+                  border={"1px solid"}
+                  borderColor={borderColor}>
+                  <Table
+                    color={textColor}
+                    variant="striped"
+                    colorScheme="blue"
+                    border="1">
+                    <Thead>
+                      {columns.map((column) => (
                         <Th
+                          key={column}
                           style={{
                             maxWidth: "100px",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
+                            textAlign: "center",
                           }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            ITEM
-                          </Text>
+                          <Text>{column}</Text>
                         </Th>
-                        <Th
-                          style={{
-                            maxWidth: "100px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            from Organization
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "100px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            DATE RECEIVED
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "100px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            EXPIRATION DATE
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "100px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            UNIT
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "110px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            QUANTITY
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "100px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            ACTION
-                          </Text>
-                        </Th>
-                      </Thead>
-                      <Tbody></Tbody>
-                    </Table>
-                  </TableContainer>
-                </Flex>
-              </Box>
-              {entries.reverse().map((row, index) => {
+                      ))}
+                    </Thead>
+                    <Tbody>
+                      {entries.map((row, index) => {
+                        return (
+                          <Tr key={index}>
+                            <Td style={{ textAlign: "center" }}>
+                              {items.find((item) => item.id === row.item)
+                                ?.name || row.item}
+                            </Td>
+                            <Td style={{ textAlign: "center" }}>
+                              {row.givenBy}
+                              <span> {row.donor && `- ${row.donor}`}</span>
+                            </Td>
+                            <Td style={{ textAlign: "center" }}>
+                              {row.dateReceived}
+                            </Td>
+                            <Td style={{ textAlign: "center" }}>
+                              {row.expir_date}
+                            </Td>
+                            <Td style={{ textAlign: "center" }}>{row.unit}</Td>
+                            <Td style={{ textAlign: "center" }}>{row.qty}</Td>
+                            <Td
+                              alignItems={"center"}
+                              style={{
+                                maxWidth: "10px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                textAlign: "center",
+                              }}>
+                              <Button
+                                p="0px"
+                                bg="transparent"
+                                mb={{ sm: "10px", md: "0px" }}
+                                me={{ md: "12px" }}
+                                onClick={async () => {
+                                  if (window.confirm("Are you sure?")) {
+                                    handleDelete(row.id, row.item, row.qty);
+                                  }
+                                }}
+                                style={{
+                                  maxWidth: "100px",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}>
+                                <Flex color="red.500" cursor="pointer" p="12px">
+                                  <Icon as={FaTrashAlt} me="4px" />
+                                  {/* <Text fontSize="sm" fontWeight="semibold">
+                                      DELETE
+                                    </Text> */}
+                                </Flex>
+                              </Button>
+
+                              <Button
+                                p="0px"
+                                bg="transparent"
+                                style={{
+                                  maxWidth: "100px",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}
+                                onClick={() => handleEditClick(row)}>
+                                <Flex
+                                  color={textColor}
+                                  cursor="pointer"
+                                  p="12px">
+                                  <Icon as={FaPencilAlt} me="4px" />
+                                  {/* <Text fontSize="sm" fontWeight="semibold">
+                                      EDIT
+                                    </Text> */}
+                                </Flex>
+                              </Button>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </Flex>
+              {/* </Box> */}
+              {/* {entries.reverse().map((row, index) => {
                 // console.log(row.unit);
                 return (
                   <StockinRow
@@ -243,25 +347,38 @@ const View = () => {
                     qty={row.qty}
                   />
                 );
-              })}
+              })} */}
             </Flex>
           </Flex>
         </CardBody>
       </Card>
-      {/* {addEntries.map((row, index) => ( */}
       <AddModal
-        // key={index}
-        // itemName={row.name}
-        // itemUnit={row.unit}
-        // addEntries={addEntries}
-        entries={entries}
-        setEntries={setEntries}
-        isOpen={isOpen}
-        onClose={onClose}
-        initialRef={initialRef}
-        finalRef={finalRef}
+        {...{
+          entries,
+          setEntries,
+          inventoryList,
+          setInventoryList,
+          isOpen: isOpenAddModal,
+          onClose: onCloseAddModal,
+          initialRef,
+          finalRef,
+        }}
       />
-      {/* ))} */}
+
+      <UpdateModal
+        {...{
+          entries,
+          setEntries,
+          inventoryList,
+          setInventoryList,
+          addEntries,
+          isOpen: isOpenUpdateModal,
+          onClose: onCloseUpdateModal,
+          initialRef,
+          finalRef,
+          selectedRow,
+        }}
+      />
     </>
   );
 };

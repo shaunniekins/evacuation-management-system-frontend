@@ -18,14 +18,16 @@ import {
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-import ItemRow from "./ItemRow";
+// import ItemRow from "./ItemRow";
 import { ItemList } from "api/itemAPI";
+import UpdateModal from "./UpdateModal";
+import { ItemDelete } from "api/itemAPI";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -38,6 +40,13 @@ const View = () => {
   const [query, setQuery] = useState("");
 
   const [entries, setEntries] = useState([]);
+
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleEditClick = (row) => {
+    setSelectedRow(row);
+    onOpenUpdateModal();
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -55,10 +64,20 @@ const View = () => {
     fetchItems();
   }, [query]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenAddModal,
+    onOpen: onOpenAddModal,
+    onClose: onCloseAddModal,
+  } = useDisclosure();
 
-  const initialRef = React.useRef(null);
-  const finalRef = React.useRef(null);
+  const {
+    isOpen: isOpenUpdateModal,
+    onOpen: onOpenUpdateModal,
+    onClose: onCloseUpdateModal,
+  } = useDisclosure();
+
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
 
   return (
     <>
@@ -77,7 +96,7 @@ const View = () => {
               color="white"
               fontSize="xs"
               variant="no-hover"
-              onClick={onOpen}>
+              onClick={onOpenAddModal}>
               ADD NEW
             </Button>
           </Flex>
@@ -126,7 +145,13 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
-              <TableContainer maxH="50vh" overflowY="auto" align={"center"}>
+              <TableContainer
+                maxH="50vh"
+                overflowY="auto"
+                align={"center"}
+                rounded="15px"
+                border={"1px solid"}
+                borderColor={borderColor}>
                 <Table
                   color={textColor}
                   variant="striped"
@@ -139,17 +164,17 @@ const View = () => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        textAlign: "center", // Add this line
+                        textAlign: "center",
                       }}>
                       <Text>ITEM</Text>
                     </Th>
                     <Th
                       style={{
-                        maxWidth: "100px",
+                        maxWidth: "50px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        textAlign: "center", // Add this line
+                        textAlign: "center",
                       }}>
                       <Text>UNIT</Text>
                     </Th>
@@ -159,15 +184,83 @@ const View = () => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        textAlign: "center", // Add this line
+                        textAlign: "center",
                       }}>
                       <Text align={"center"}>ACTION</Text>
                     </Th>
                   </Thead>
+                  <Tbody>
+                    {entries.map((row, index) => {
+                      return (
+                        <Tr key={index}>
+                          <Td style={{ textAlign: "center" }}>{row.name}</Td>
+                          <Td style={{ textAlign: "center", maxWidth: "50px" }}>
+                            {row.unit}
+                          </Td>
+                          <Td
+                            alignItems={"center"}
+                            style={{
+                              maxWidth: "10px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}>
+                            <Button
+                              p="0px"
+                              bg="transparent"
+                              mb={{ sm: "10px", md: "0px" }}
+                              me={{ md: "12px" }}
+                              onClick={async () => {
+                                if (window.confirm("Are you sure?")) {
+                                  await ItemDelete(row.id);
+                                  setEntries((prevEntries) =>
+                                    prevEntries.filter(
+                                      (item) => item.id !== row.id
+                                    )
+                                  );
+                                }
+                              }}
+                              style={{
+                                maxWidth: "100px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}>
+                              <Flex color="red.500" cursor="pointer" p="12px">
+                                <Icon as={FaTrashAlt} me="4px" />
+                                <Text fontSize="sm" fontWeight="semibold">
+                                  DELETE
+                                </Text>
+                              </Flex>
+                            </Button>
+
+                            <Button
+                              p="0px"
+                              bg="transparent"
+                              style={{
+                                maxWidth: "100px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                              onClick={() => handleEditClick(row)}>
+                              <Flex color={textColor} cursor="pointer" p="12px">
+                                <Icon as={FaPencilAlt} me="4px" />
+                                <Text fontSize="sm" fontWeight="semibold">
+                                  EDIT
+                                </Text>
+                              </Flex>
+                            </Button>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
                 </Table>
               </TableContainer>
 
-              {entries.map((row, index) => {
+              {/* {entries.map((row, index) => {
                 return (
                   <ItemRow
                     entries={entries}
@@ -178,14 +271,33 @@ const View = () => {
                     unit={row.unit}
                   />
                 );
-              })}
+              })} */}
             </Flex>
           </Flex>
         </CardBody>
       </Card>
 
       <AddModal
-        {...{ entries, setEntries, isOpen, onClose, initialRef, finalRef }}
+        {...{
+          entries,
+          setEntries,
+          isOpen: isOpenAddModal,
+          onClose: onCloseAddModal,
+          initialRef,
+          finalRef,
+        }}
+      />
+
+      <UpdateModal
+        {...{
+          entries,
+          setEntries,
+          isOpen: isOpenUpdateModal,
+          onClose: onCloseUpdateModal,
+          initialRef,
+          finalRef,
+          selectedRow,
+        }}
       />
     </>
   );

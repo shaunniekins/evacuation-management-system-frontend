@@ -20,12 +20,14 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
 import React, { useEffect } from "react";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-import CashdonationRow from "./CashdonationRow";
+// import CashdonationRow from "./CashdonationRow";
 import { cashDonationList } from "api/cashDonationAPI";
+import { cashDonationDelete } from "api/cashDonationAPI";
+import UpdateModal from "./UpdateModal";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -56,10 +58,36 @@ const View = () => {
     fetchItems();
   }, [query]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenAddModal,
+    onOpen: onOpenAddModal,
+    onClose: onCloseAddModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenUpdateModal,
+    onOpen: onOpenUpdateModal,
+    onClose: onCloseUpdateModal,
+  } = useDisclosure();
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
+
+  const columns = [
+    "FROM",
+    "DONOR",
+    "DATE RECEIVED",
+    "MODE OF TRANSFER",
+    "AMOUNT",
+    "ACTION",
+  ];
+
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleEditClick = (row) => {
+    setSelectedRow(row);
+    onOpenUpdateModal();
+  };
 
   return (
     <>
@@ -78,7 +106,7 @@ const View = () => {
               color="white"
               fontSize="xs"
               variant="no-hover"
-              onClick={onOpen}>
+              onClick={onOpenAddModal}>
               ADD NEW
             </Button>
           </Flex>
@@ -127,91 +155,111 @@ const View = () => {
               </Flex>
             </Flex>
             <Flex direction="column" w="100%">
-              <Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
-                <Flex direction="column" justify={"center"} maxWidth="100%">
-                  <TableContainer maxH="50vh" overflowY="auto">
-                    <Table
-                      color={textColor}
-                      variant="striped"
-                      colorScheme="blue"
-                      border="1"
-                      direction="column"
-                      justify={"center"}
-                      maxWidth="100%">
-                      <Thead>
-                        <Th
-                          style={{
-                            maxWidth: "60px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            FROM
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "60px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            DONOR
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "60px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            DATE RECEIVED
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "60px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            MODE OF TRANSFER
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "90px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            AMOUNT
-                          </Text>
-                        </Th>
-                        <Th
-                          style={{
-                            maxWidth: "90px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                          <Text color={textColor} cursor="pointer" p="12px">
-                            ACTION
-                          </Text>
-                        </Th>
-                      </Thead>
-                      <Tbody></Tbody>
-                    </Table>
-                  </TableContainer>
-                </Flex>
-              </Box>
-              {entries.reverse().map((row, index) => {
+              <TableContainer
+                maxH="50vh"
+                overflowY="auto"
+                overflowX="auto"
+                align={"center"}
+                rounded="15px"
+                border={"1px solid"}
+                borderColor={borderColor}>
+                <Table
+                  color={textColor}
+                  variant="striped"
+                  colorScheme="blue"
+                  border="1">
+                  <Thead>
+                    {columns.map((column) => (
+                      <Th
+                        key={column}
+                        style={{
+                          maxWidth: "100px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          textAlign: "center",
+                        }}>
+                        <Text>{column}</Text>
+                      </Th>
+                    ))}
+                  </Thead>
+                  <Tbody>
+                    {entries.reverse().map((row, index) => {
+                      return (
+                        <Tr key={index}>
+                          <Td style={{ textAlign: "center" }}>{row.givenBy}</Td>
+                          <Td style={{ textAlign: "center" }}>
+                            {row.donor || "-"}
+                          </Td>
+                          <Td style={{ textAlign: "center" }}>{row.date}</Td>
+                          <Td style={{ textAlign: "center" }}>
+                            {row.modeOfTransfer}
+                          </Td>
+                          <Td style={{ textAlign: "center" }}>{row.amount}</Td>
+                          <Td
+                            alignItems={"center"}
+                            style={{
+                              maxWidth: "10px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}>
+                            <Button
+                              p="0px"
+                              bg="transparent"
+                              mb={{ sm: "10px", md: "0px" }}
+                              me={{ md: "12px" }}
+                              onClick={async () => {
+                                if (window.confirm("Are you sure?")) {
+                                  await cashDonationDelete(row.id);
+                                  setEntries((prevEntries) =>
+                                    prevEntries.filter(
+                                      (item) => item.id !== row.id
+                                    )
+                                  );
+                                }
+                              }}
+                              style={{
+                                maxWidth: "100px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}>
+                              <Flex color="red.500" cursor="pointer" p="12px">
+                                <Icon as={FaTrashAlt} me="4px" />
+                                {/* <Text fontSize="sm" fontWeight="semibold">
+                                    DELETE
+                                  </Text> */}
+                              </Flex>
+                            </Button>
+
+                            <Button
+                              p="0px"
+                              bg="transparent"
+                              style={{
+                                maxWidth: "100px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                              onClick={() => handleEditClick(row)}>
+                              <Flex color={textColor} cursor="pointer" p="12px">
+                                <Icon as={FaPencilAlt} me="4px" />
+                                {/* <Text fontSize="sm" fontWeight="semibold">
+                                    EDIT
+                                  </Text> */}
+                              </Flex>
+                            </Button>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Flex>
+            {/* {entries.reverse().map((row, index) => {
                 // console.log(row.date);
                 return (
                   <CashdonationRow
@@ -227,14 +275,39 @@ const View = () => {
                     date={row.date}
                   />
                 );
-              })}
-            </Flex>
+              })} */}
           </Flex>
         </CardBody>
       </Card>
 
       <AddModal
-        {...{ entries, setEntries, isOpen, onClose, initialRef, finalRef }}
+        {...{
+          entries,
+          setEntries,
+          isOpen: isOpenAddModal,
+          onClose: onCloseAddModal,
+          initialRef,
+          finalRef,
+        }}
+      />
+
+      <UpdateModal
+        {...{
+          entries,
+          setEntries,
+          // id,
+          // controlNumber,
+          // givenBy,
+          // donor,
+          // amount,
+          // modeOfTransfer,
+          // date,
+          isOpen: isOpenUpdateModal,
+          onClose: onCloseUpdateModal,
+          initialRef,
+          finalRef,
+          selectedRow,
+        }}
       />
     </>
   );

@@ -1,19 +1,8 @@
-import { useState, useEffect } from "react";
+export const InventoryList = async () => {
+  let response = await fetch("http://127.0.0.1:8000/api/inventory");
+  let data = await response.json();
 
-export const InventoryList = () => {
-  const [entries, setEntries] = useState([]);
-
-  useEffect(() => {
-    getItem();
-  }, []);
-
-  const getItem = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/inventory");
-    let data = await response.json();
-    setEntries(data);
-  };
-
-  return entries;
+  return data;
 };
 
 // export const InventoryList = async () => {
@@ -46,6 +35,9 @@ export const InventoryAdd = async (item, qty) => {
 };
 
 export const InventoryUpdate = async (id, item, qty) => {
+  // console.log("id: ", id);
+  // console.log("item: ", item);
+  // console.log("qty: ", qty);
   try {
     const response = await fetch("http://127.0.0.1:8000/api/inventory/" + id, {
       method: "PUT",
