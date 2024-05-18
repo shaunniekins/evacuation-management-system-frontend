@@ -1,20 +1,25 @@
-export const InventoryList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/inventory");
-  let data = await response.json();
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-  return data;
+export const InventoryList = () => {
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    getItem();
+  }, []);
+
+  const getItem = async () => {
+    let response = await fetch(`${BASE_URL}/api/inventory`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
-
-// export const InventoryList = async () => {
-//   let response = await fetch("http://127.0.0.1:8000/api/inventory");
-//   let data = await response.json();
-
-//   return data;
-// };
 
 export const InventoryAdd = async (item, qty) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/inventory/", {
+    const response = await fetch(`${BASE_URL}/api/inventory/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -35,11 +40,8 @@ export const InventoryAdd = async (item, qty) => {
 };
 
 export const InventoryUpdate = async (id, item, qty) => {
-  // console.log("id: ", id);
-  // console.log("item: ", item);
-  // console.log("qty: ", qty);
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/inventory/" + id, {
+    const response = await fetch(`${BASE_URL}/api/inventory/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -51,7 +53,6 @@ export const InventoryUpdate = async (id, item, qty) => {
       }),
     });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -61,7 +62,7 @@ export const InventoryUpdate = async (id, item, qty) => {
 
 export const InventoryDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/inventory/" + id, {
+    fetch(`${BASE_URL}/api/inventory/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  Text,
 } from "recharts";
 import { PieChart, Pie, Cell } from "recharts";
 import { Flex, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
@@ -336,6 +337,93 @@ export const IPReport = ({ startDate, endDate }) => {
   );
 };
 
+
+
+export const SeniorReport = ({ startDate, endDate }) => {
+  let { userPosition, userBarangay } = useContext(AuthContext);
+  const isAdmin = userPosition == "Personnel" ? false : true;
+
+  const evacList = resEvacList().filter((entry) => {
+    if (startDate && endDate) {
+      const date = new Date(entry.date);
+      return date >= new Date(startDate) && date <= new Date(endDate);
+    }
+    return true;
+  });
+  const evacueeList = EvacueeList();
+
+  let seniorNum = 0;
+  let nonseniorNum = 0;
+
+  if (!isAdmin) {
+    for (let i = 0; i < evacList.length; i++) {
+      const residentId = evacList[i].resident;
+      const evacuee = evacueeList.find(
+        (e) => e.id === residentId && e.barangay === userBarangay
+      );
+      if (evacuee) {
+        if (evacuee.is_senior.toLowerCase() === "senior") seniorNum++;
+        // else if (evacuee.is_senior.toLowerCase() === "not senior") nonseniorNum++;
+      }
+    }
+  }
+
+  if (isAdmin) {
+    for (let i = 0; i < evacList.length; i++) {
+      const residentId = evacList[i].resident;
+      const evacuee = evacueeList.find((e) => e.id === residentId);
+      if (evacuee) {
+        if (evacuee.is_senior.toLowerCase() === "senior") seniorNum++;
+        // else if (evacuee.is_senior.toLowerCase() === "not senior") nonseniorNum++;
+      }
+    }
+  }
+
+  const data = [
+    { name: "SENIOR", count: seniorNum },
+    // { name: "NOT SENIOR", count: nonseniorNum },
+  ];
+
+  return (
+    <Flex direction={"row"} justify={"space-between"}>
+      <Flex w={"100%"}>
+        <Table colorScheme="blue">
+          <Thead>
+            <Tr>
+              <Th>Status</Th>
+              <Th>Number</Th>
+            </Tr>
+          </Thead>
+
+          <Tbody>
+            <Tr>
+              <Th>SENIOR</Th>
+              <Td>{seniorNum}</Td>
+            </Tr>
+            {/* <Tr>
+              <Th>Not SENIOR</Th>
+              <Td>{nonseniorNum}</Td>
+            </Tr> */}
+          </Tbody>
+        </Table>
+      </Flex>
+      <Flex>
+        <BarChart width={500} height={300} data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="count" fill="#BEE3F8" />
+        </BarChart>
+      </Flex>
+    </Flex>
+  );
+};
+
+
+
+
+
 export const AgeReport = ({ startDate, endDate }) => {
   let { userPosition, userBarangay } = useContext(AuthContext);
   const isAdmin = userPosition == "Personnel" ? false : true;
@@ -451,7 +539,9 @@ export const AgeReport = ({ startDate, endDate }) => {
   return (
     <Flex direction={"row"} justify={"space-between"}>
       <Flex w={"100%"}>
+        
         <Table variant="striped" colorScheme="blue">
+
           <Thead>
             <Tr>
               <Th>Age Range</Th>

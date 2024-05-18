@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const getEvacueeCount = () => {
   const [evacueeCount, setEvacueeCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/evacuee_count")
+    fetch(`${BASE_URL}/api/evacuee_count`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setEvacueeCount(data.evacuee_count);
       });
   }, []);
@@ -19,10 +19,9 @@ export const getFamilyCount = () => {
   const [familyCount, setFamilyCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/family_count")
+    fetch(`${BASE_URL}/api/family_count`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setFamilyCount(data.family_count);
       });
   }, []);
@@ -34,10 +33,9 @@ export const getMaleCount = () => {
   const [maleCount, setMaleCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/male_count")
+    fetch(`${BASE_URL}/api/male_count`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setMaleCount(data.male_count);
       });
   }, []);
@@ -49,12 +47,10 @@ export const getFemaleCount = () => {
   const [femaleCount, setFemaleCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/female_count")
+    fetch(`${BASE_URL}/api/female_count`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setFemaleCount(data.female_count);
-        // console.log("Female:", data.female_count);
       });
   }, []);
 
@@ -65,7 +61,7 @@ export const getEvacuationCenterCount = () => {
   const [evacCenterCount, setEvacCenterCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/evacuation_center_count")
+    fetch(`${BASE_URL}/api/evacuation_center_count`)
       .then((response) => response.json())
       .then((data) => {
         setEvacCenterCount(data.evacuation_center_count);
@@ -79,10 +75,9 @@ export const getBarangayCount = () => {
   const [barangayCount, setBarangayCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/barangay_count")
+    fetch(`${BASE_URL}/api/barangay_count`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setBarangayCount(data.barangay_count);
       });
   }, []);
@@ -94,10 +89,9 @@ export const getBarangayList = () => {
   const [barangayItem, setBarangayItem] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/barangay_item")
+    fetch(`${BASE_URL}/api/barangay_item`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setBarangayItem(data.barangay_item);
       });
   }, []);
@@ -109,10 +103,9 @@ export const getMunicipalityList = () => {
   const [municipalityItem, setMunicipalityItem] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/municipality_item")
+    fetch(`${BASE_URL}/api/municipality_item`)
       .then((response) => response.json())
       .then((data) => {
-        // console.log(response);
         setMunicipalityItem(data.municipality_item);
       });
   }, []);

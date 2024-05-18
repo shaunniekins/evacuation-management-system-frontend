@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Box,
@@ -33,8 +33,7 @@ import { BarangayInventoryUpdate } from "api/inventoryPerBarangayAPI";
 import { useHistory } from "react-router-dom";
 
 const AddModal = ({
-  entries,
-  setEntries,
+  // inventoryEntries,
   isOpen,
   onClose,
   initialRef,
@@ -42,66 +41,16 @@ const AddModal = ({
 }) => {
   const textColor = useColorModeValue("gray.700", "white");
 
-  // const itemEntry = ItemList();
-  const [itemEntry, setItemEntry] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-      setItemEntry(data);
-    };
-
-    fetchItems();
-  }, []);
-
-  const [inventoryList, setInventoryList] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await InventoryList();
-      setInventoryList(data);
-    };
-
-    fetchItems();
-  }, []);
-
-  const [barangayList, setBarangayList] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayList();
-      setBarangayList(data);
-    };
-
-    fetchItems();
-  }, []);
-
-  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayInventoryList();
-      setBarangayInventoryList(data);
-    };
-
-    fetchItems();
-  }, []);
+  const itemEntry = ItemList();
+  const inventoryList = InventoryList();
+  const barangayEntry = BarangayList();
+  const barangayInventoryList = BarangayInventoryList();
 
   const [unitValue, setUnitValue] = useState("");
 
   const history = useHistory();
 
-  // const entry1 = ItemList();
-  const [entry1, setEntry1] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-      setEntry1(data);
-    };
-
-    fetchItems();
-  }, []);
+  const entry1 = ItemList();
 
   const idConvertName = (itemID, itemUnit, itemQty) => {
     const selectedItem = entry1.find((item) => item.id === itemID);
@@ -267,7 +216,7 @@ const AddModal = ({
         }
 
         onClose();
-        // history.push("/admin/dashboard");
+        history.push("/admin/dashboard");
       }
     } catch (error) {
       alert(`Failed: ${error}`);
@@ -327,7 +276,7 @@ const AddModal = ({
                 id="barangay-field"
                 name="barangay"
                 placeholder="-- Select barangay --">
-                {barangayList.map((entry) => (
+                {barangayEntry.map((entry) => (
                   <option key={entry.id} value={entry.id} data-id={entry.id}>
                     {entry.name}
                   </option>

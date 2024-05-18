@@ -1,34 +1,16 @@
-// Chakra imports
 import {
-  Button,
-  Flex,
-  Icon,
-  Spacer,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Td,
-  Tr,
-  Th,
-  TableContainer,
-  useColorModeValue,
+  Button,Flex,Icon,Spacer,Text,Table,Thead,Tbody,Td,Tr,Th,TableContainer,useColorModeValue,
 } from "@chakra-ui/react";
-// Custom components
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useState } from "react";
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
-
+import { FaPencilAlt,FaPrint  } from "react-icons/fa";
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-// import ItemRow from "./ItemRow";
+import ItemRow from "./ItemRow";
 import { ItemList } from "api/itemAPI";
-import UpdateModal from "./UpdateModal";
-import { ItemDelete } from "api/itemAPI";
-
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
@@ -38,46 +20,25 @@ const View = () => {
     "gray.800"
   );
   const [query, setQuery] = useState("");
-
-  const [entries, setEntries] = useState([]);
-
-  const [selectedRow, setSelectedRow] = useState(null);
-
-  const handleEditClick = (row) => {
-    setSelectedRow(row);
-    onOpenUpdateModal();
-  };
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-
-      const filteredEntries = data.filter(
-        (entry) =>
-          entry.name.toLowerCase().includes(query.toLowerCase()) ||
-          entry.unit.toLowerCase().includes(query.toLowerCase())
-      );
-      setEntries(filteredEntries);
-      // console.log("filteredEntries: ", filteredEntries);
-    };
-
-    fetchItems();
-  }, [query]);
-
-  const {
-    isOpen: isOpenAddModal,
-    onOpen: onOpenAddModal,
-    onClose: onCloseAddModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenUpdateModal,
-    onOpen: onOpenUpdateModal,
-    onClose: onCloseUpdateModal,
-  } = useDisclosure();
-
-  const initialRef = useRef(null);
-  const finalRef = useRef(null);
+  const entries = ItemList().filter(
+    (entry) =>
+      entry.name.toLowerCase().includes(query.toLowerCase()) ||
+      entry.unit.toLowerCase().includes(query.toLowerCase())
+  );
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const initialRef = React.useRef(null);
+  const finalRef = React.useRef(null);
+  const handlePrint = () => {
+  const printSection = document.getElementById("print-item");
+  if (printSection) {
+    const originalContents = document.body.innerHTML;
+    const printContents = printSection.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);  }};
 
   return (
     <>
@@ -89,17 +50,16 @@ const View = () => {
             minHeight="60px"
             w="100%">
             <Text fontSize="lg" color={textColor} fontWeight="bold">
-              Items
-            </Text>
+            </Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text>
             <Button
               bg={bgButton}
               color="white"
               fontSize="xs"
               variant="no-hover"
-              onClick={onOpenAddModal}>
+              onClick={onOpen}>
               ADD NEW
             </Button>
-          </Flex>
+                 </Flex>
         </CardHeader>
         <CardBody>
           <Flex direction={"column"} width={"100%"}>
@@ -122,7 +82,7 @@ const View = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search"
+                  placeholder="Filter"
                   style={{
                     width: "100%",
                     border: "none",
@@ -130,9 +90,7 @@ const View = () => {
                     fontSize: "md",
                     fontWeight: "semibold",
                     color: "gray.400",
-                    background: "transparent",
-                  }}
-                />
+                    background: "transparent", }}/>
                 <Spacer />
                 <Button
                   p="0px"
@@ -144,163 +102,42 @@ const View = () => {
                 </Button>
               </Flex>
             </Flex>
+              <div id="print-item">
             <Flex direction="column" w="100%">
-              <TableContainer
-                maxH="50vh"
-                overflowY="auto"
-                align={"center"}
-                rounded="15px"
-                border={"1px solid"}
-                borderColor={borderColor}>
-                <Table
-                  color={textColor}
-                  variant="striped"
-                  colorScheme="blue"
-                  border="1">
-                  <Thead>
-                    <Th
-                      style={{
-                        maxWidth: "100px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}>
-                      <Text>ITEM</Text>
-                    </Th>
-                    <Th
-                      style={{
-                        maxWidth: "50px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}>
-                      <Text>UNIT</Text>
-                    </Th>
-                    <Th
-                      style={{
-                        maxWidth: "100px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        textAlign: "center",
-                      }}>
-                      <Text align={"center"}>ACTION</Text>
-                    </Th>
-                  </Thead>
-                  <Tbody>
-                    {entries.map((row, index) => {
-                      return (
-                        <Tr key={index}>
-                          <Td style={{ textAlign: "center" }}>{row.name}</Td>
-                          <Td style={{ textAlign: "center", maxWidth: "50px" }}>
-                            {row.unit}
-                          </Td>
-                          <Td
-                            alignItems={"center"}
-                            style={{
-                              maxWidth: "10px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}>
-                            <Button
-                              p="0px"
-                              bg="transparent"
-                              mb={{ sm: "10px", md: "0px" }}
-                              me={{ md: "12px" }}
-                              onClick={async () => {
-                                if (window.confirm("Are you sure?")) {
-                                  await ItemDelete(row.id);
-                                  setEntries((prevEntries) =>
-                                    prevEntries.filter(
-                                      (item) => item.id !== row.id
-                                    )
-                                  );
-                                }
-                              }}
-                              style={{
-                                maxWidth: "100px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}>
-                              <Flex color="red.500" cursor="pointer" p="12px">
-                                <Icon as={FaTrashAlt} me="4px" />
-                                <Text fontSize="sm" fontWeight="semibold">
-                                  DELETE
-                                </Text>
-                              </Flex>
-                            </Button>
-
-                            <Button
-                              p="0px"
-                              bg="transparent"
-                              style={{
-                                maxWidth: "100px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                              onClick={() => handleEditClick(row)}>
-                              <Flex color={textColor} cursor="pointer" p="12px">
-                                <Icon as={FaPencilAlt} me="4px" />
-                                <Text fontSize="sm" fontWeight="semibold">
-                                  EDIT
-                                </Text>
-                              </Flex>
-                            </Button>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-
-              {/* {entries.map((row, index) => {
-                return (
-                  <ItemRow
-                    entries={entries}
-                    setEntries={setEntries}
+              <TableContainer maxH="50vh" overflowY="auto" align={"center"}>
+                <Table color={textColor} variant="striped" colorScheme="blue" border="1" >
+                    <Thead>
+                       <Tr >  <Td colspan="8"><Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>Items</Text></Td></Tr>
+        <Tr>
+          <Th style={{ width: '30%' }}>
+            <Text fontSize="sm" fontWeight="semibold">
+              Name
+            </Text>
+          </Th>
+          <Th style={{ width: '30%' }}>
+            <Text fontSize="sm" fontWeight="semibold">
+              Unit
+            </Text>
+          </Th>
+          <Th style={{ width: '40%' }}>
+            <Text fontSize="sm" fontWeight="semibold">
+              Actions
+            </Text>
+          </Th>
+        </Tr>
+      </Thead><Tbody></Tbody></Table>
+    </TableContainer>
+              {entries.reverse().map((row, index) => (
+                <ItemRow
                     key={index}
                     id={row.id}
                     name={row.name}
-                    unit={row.unit}
-                  />
-                );
-              })} */}
-            </Flex>
+                  unit={row.unit}/>
+                ))}
+              </Flex>
+                </div>
           </Flex>
         </CardBody>
       </Card>
-
-      <AddModal
-        {...{
-          entries,
-          setEntries,
-          isOpen: isOpenAddModal,
-          onClose: onCloseAddModal,
-          initialRef,
-          finalRef,
-        }}
-      />
-
-      <UpdateModal
-        {...{
-          entries,
-          setEntries,
-          isOpen: isOpenUpdateModal,
-          onClose: onCloseUpdateModal,
-          initialRef,
-          finalRef,
-          selectedRow,
-        }}
-      />
-    </>
-  );
-};
-
+      <AddModal {...{ isOpen, onClose, initialRef, finalRef }} /></>);};
 export default View;

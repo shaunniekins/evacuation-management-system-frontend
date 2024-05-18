@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Button,
@@ -18,52 +18,31 @@ import { InventoryList, InventoryAdd, InventoryUpdate } from "api/inventoryAPI";
 import { ItemList } from "api/itemAPI";
 
 import { useHistory } from "react-router-dom";
-import { StockinList } from "api/stockinAPI";
 
 const AddModal = ({
-  entries,
-  setEntries,
-  inventoryList,
-  setInventoryList,
-  isOpen: isOpenAddModal,
-  onClose: onCloseAddModal,
+  // addEntries,
+  // itemName,
+  // itemUnit,
+  isOpen,
+  onClose,
   initialRef,
   finalRef,
 }) => {
-  const [addEntries, setAddEntries] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-      setAddEntries(data);
-    };
-
-    fetchItems();
-  }, []);
+  const addEntries = ItemList();
 
   const history = useHistory();
 
-  // const inventoryList = InventoryList();
-
-  // const [inventoryList, setInventoryList] = useState([]);
-
-  // useEffect(() => {
-  //   const fetchItems = async () => {
-  //     let data = await InventoryList();
-  //     setInventoryList(data);
-  //   };
-
-  //   fetchItems();
-  // }, []);
+  const inventoryList = InventoryList();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const givenBy = event.target.givenBy.value;
     const donor = event.target.donor.value;
     const dateReceived = event.target.dateReceived.value;
+
     const itemIDValueSubmit = itemIDValue;
     const qty = event.target.qty.value;
-    const expir_date = event.target.expir_date.value;
+  const expir_date = event.target.expir_date.value;
 
     try {
       const result = await StockinAdd(
@@ -81,28 +60,24 @@ const AddModal = ({
     try {
       let itemExists = false;
 
-      await inventoryList.reduce(async (promise, entry) => {
-        await promise;
+      inventoryList.map(async (entry) => {
         if (entry.item === parseInt(itemIDValueSubmit)) {
           itemExists = true;
           const newQty = parseFloat(entry.qty) + parseFloat(qty);
-          await InventoryUpdate(entry.id, itemIDValueSubmit, newQty);
+          const resultInventory = await InventoryUpdate(
+            entry.id,
+            itemIDValueSubmit,
+            newQty
+          );
         }
-      }, Promise.resolve());
+      });
 
       if (!itemExists) {
-        await InventoryAdd(itemIDValueSubmit, qty);
+        const resultInventory = await InventoryAdd(itemIDValueSubmit, qty);
       }
 
-      // Fetch the updated inventory list from the server
-      const updatedInventoryList = await InventoryList();
-      // Update the inventoryList state
-      setInventoryList(updatedInventoryList);
-
-      const updatedItems = await StockinList();
-      setEntries(updatedItems);
-      onCloseAddModal();
-      // history.push("/admin/dashboard");
+      onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -136,8 +111,8 @@ const AddModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpenAddModal}
-      onClose={onCloseAddModal}
+      isOpen={isOpen}
+      onClose={onClose}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -178,7 +153,7 @@ const AddModal = ({
                 ref={initialRef}
                 placeholder="Date Received"
               />
-              <FormLabel>Expiration Date</FormLabel>
+ <FormLabel>Expiration Date</FormLabel>
               <Input
                 required
                 type="date"
@@ -188,6 +163,7 @@ const AddModal = ({
                 ref={initialRef}
                 placeholder="Expiation Date"
               />
+
               <FormLabel>Item</FormLabel>
               <Flex justify={"space-between"} gap={2}>
                 <Select
@@ -232,7 +208,7 @@ const AddModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Add
             </Button>
-            <Button onClick={onCloseAddModal}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

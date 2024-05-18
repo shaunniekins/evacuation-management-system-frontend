@@ -17,6 +17,7 @@ import UpdateModal from "./UpdateModal";
 import { ProfileIcon } from "components/Icons/Icons";
 
 import { useHistory } from "react-router-dom";
+import { BASE_URL } from "../../../../urlConfig";
 
 function EvacuationRow(props) {
   const {
@@ -49,13 +50,9 @@ function EvacuationRow(props) {
   const finalRef = React.useRef(null);
 
   let userImage =
-    image === undefined || image === null
-      ? false
-      : `http://127.0.0.1:8000/api${image}`;
-
-  useEffect(() => {
-    // console.log("isError:", isError);
-  }, [isError]);
+  image === undefined || image === null
+    ? false
+    : `${BASE_URL}${image}`;
 
   return (
     <>

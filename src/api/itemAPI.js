@@ -1,15 +1,25 @@
-export const ItemList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/items");
-  let data = await response.json();
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-  // console.log("itemList: ", data);
+export const ItemList = () => {
+  const [entries, setEntries] = useState([]);
 
-  return data;
+  useEffect(() => {
+    getItem();
+  }, []);
+
+  const getItem = async () => {
+    let response = await fetch(`${BASE_URL}/api/items`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
 
 export const ItemAdd = async (name, unit) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/items/", {
+    const response = await fetch(`${BASE_URL}/api/items/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -21,17 +31,17 @@ export const ItemAdd = async (name, unit) => {
         unit: unit,
       }),
     });
-    const data = await response.json(); // Parse the response body as JSON
-
-    return data; // This will now be the inserted data
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
   }
 };
+
 export const ItemUpdate = async (id, name, unit) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/items/" + id, {
+    const response = await fetch(`${BASE_URL}/api/items/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -43,7 +53,6 @@ export const ItemUpdate = async (id, name, unit) => {
       }),
     });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -52,17 +61,19 @@ export const ItemUpdate = async (id, name, unit) => {
 };
 
 export const ItemDelete = (id) => {
-  fetch("http://127.0.0.1:8000/api/items/" + id, {
-    method: "DELETE",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    // .then(() => {
-    //   console.log("Deleted!");
-    // })
-    .catch((error) => {
-      console.log(error);
-    });
+  if (window.confirm("Are you sure?")) {
+    fetch(`${BASE_URL}/api/items/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then(() => {
+        console.log("Deleted!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };

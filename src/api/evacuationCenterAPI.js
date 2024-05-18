@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const EvacuationCenterList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const EvacuationCenterList = () => {
   }, []);
 
   const getEvacuationCenter = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/evacuation");
+    let response = await fetch(`${BASE_URL}/api/evacuation`);
     let data = await response.json();
     setEntries(data);
   };
@@ -23,7 +24,7 @@ export const EvacuationCenterAdd = async (
   capacity
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/evacuation/", {
+    const response = await fetch(`${BASE_URL}/api/evacuation/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -53,7 +54,7 @@ export const EvacuationCenterUpdate = async (
   capacity
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/evacuation/" + id, {
+    const response = await fetch(`${BASE_URL}/api/evacuation/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -67,7 +68,6 @@ export const EvacuationCenterUpdate = async (
       }),
     });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -77,7 +77,7 @@ export const EvacuationCenterUpdate = async (
 
 export const EvacuationCenterDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/evacuation/" + id, {
+    fetch(`${BASE_URL}/api/evacuation/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

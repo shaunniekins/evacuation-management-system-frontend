@@ -1,15 +1,6 @@
-// Chakra Icons
-import { BellIcon, SearchIcon } from "@chakra-ui/icons";
-// Chakra Imports
 import {
   Box,
-  Button,
   Flex,
-  IconButton,
-  Image,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Text,
   Avatar,
   Menu,
@@ -20,7 +11,6 @@ import {
   MenuList,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useDisclosure } from "@chakra-ui/react";
 import { useEffect } from "react";
 // Custom Icons
 import { ProfileIcon, SettingsIcon } from "components/Icons/Icons";
@@ -43,6 +33,7 @@ import UpdateModal from "./UpdateUserPassword";
 
 import { useContext } from "react";
 import AuthContext from "context/AuthContext";
+import { BASE_URL } from "../../urlConfig";
 
 export default function HeaderLinks(props) {
   const routes = RouteComponent();
@@ -79,7 +70,7 @@ export default function HeaderLinks(props) {
     userImage,
   } = useContext(AuthContext);
 
-  userImage = `http://127.0.0.1:8000/api${userImage}`;
+userImage = `${BASE_URL}${userImage}`
 
   useEffect(() => {
     // console.log("isError:", isError);

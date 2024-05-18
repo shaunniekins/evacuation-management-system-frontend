@@ -7,12 +7,15 @@ import {
   PWDReport,
   AgeReport,
   IPReport,
+  SeniorReport,
 } from "./Report";
 import TableList from "./TableList";
 
 import { useContext } from "react";
 import AuthContext from "context/AuthContext";
-
+import SeniorTableList from "./SeniorTableList";
+import PWDTableList from "./PWDTableList";
+import IPTableList from "./IPTableList";
 export class PrintableReports extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -57,7 +60,15 @@ export class PrintableReports extends React.PureComponent {
             <PWDReport startDate={startDate} endDate={endDate} />
           </div>
         )}
-        {selectedReports.includes("ip") && (
+        {selectedReports.includes("is_senior") && (
+          <div className="report-container">
+            <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
+              SENIOR{" "}
+            </Text>
+            <SeniorReport startDate={startDate} endDate={endDate} />
+          </div>
+        )}
+             {selectedReports.includes("ip") && (
           <div className="report-container">
             <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
               IP{" "}
@@ -67,16 +78,42 @@ export class PrintableReports extends React.PureComponent {
         )}
         {selectedReports.includes("table") && (
           <div className="report-container">
-            <Text
-              fontWeight={"semibold"}
-              fontSize={"50px"}
-              textAlign={"center"}>
+            <Text fontWeight={"semibold"} fontSize={"50px"} textAlign={"center"}>
               {/* MUNICAPALITY OF BUNAWAN{" "} */}
-            </Text>{" "}
-            <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
-              {/* List of Evacuee{" "} */}
+              </Text> <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
+             {/* List of Evacuee{" "} */}
             </Text>
             <TableList startDate={startDate} endDate={endDate} />
+          </div>
+        )}
+                {selectedReports.includes("senior") && (
+          <div className="report-container">
+            <Text fontWeight={"semibold"} fontSize={"50px"} textAlign={"center"}>
+              {/* MUNICAPALITY OF BUNAWAN{" "} */}
+              </Text> <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
+             {/* List of Evacuee{" "} */}
+            </Text>
+            <SeniorTableList startDate={startDate} endDate={endDate} />
+          </div>
+        )}
+                        {selectedReports.includes("PWDList") && (
+          <div className="report-container">
+            <Text fontWeight={"semibold"} fontSize={"50px"} textAlign={"center"}>
+              {/* MUNICAPALITY OF BUNAWAN{" "} */}
+              </Text> <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
+             {/* List of Evacuee{" "} */}
+            </Text>
+            <PWDTableList startDate={startDate} endDate={endDate} />
+          </div>
+        )}
+                        {selectedReports.includes("INPList") && (
+          <div className="report-container">
+            <Text fontWeight={"semibold"} fontSize={"50px"} textAlign={"center"}>
+           
+              </Text> <Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
+      
+            </Text>
+            <IPTableList startDate={startDate} endDate={endDate} />
           </div>
         )}
       </Flex>

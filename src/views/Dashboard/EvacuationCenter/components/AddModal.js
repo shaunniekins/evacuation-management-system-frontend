@@ -21,17 +21,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const history = useHistory();
 
   const [formData, setFormData] = useState({});
-
-  const [barangayList, setBarangayList] = useState([]);
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayList();
-      setBarangayList(data);
-    };
-
-    fetchItems();
-  }, []);
-
+  const barangayEntries = BarangayList();
   const municipalityEntries = MunicipalityList();
   const [filteredBarangayEntries, setFilteredBarangayEntries] = useState([]);
 
@@ -58,7 +48,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
 
     if (name === "municipality") {
       // Filter barangay entries based on the selected municipality
-      const filteredBarangays = barangayList.filter(
+      const filteredBarangays = barangayEntries.filter(
         (barangay) => barangay.municipality === value
       );
       setFilteredBarangayEntries(filteredBarangays);

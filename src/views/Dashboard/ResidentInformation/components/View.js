@@ -1,5 +1,5 @@
 // Chakra imports
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import {
   Flex,
@@ -32,6 +32,7 @@ function View() {
   const [isIp, setIsIp] = useState("");
   const [isHead, setIsHead] = useState("");
   const [age, setAge] = useState("");
+  const [is_senior, setSenior] = useState("");
   const [length_of_year_count, setLofY] = useState("");
 
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -77,7 +78,10 @@ function View() {
         event.target.is_head.value,
         event.target.household_num.value,
         event.target.street_add.value,
-        event.target.length_of_year.value
+        event.target.length_of_year.value,
+        event.target.is_senior.value
+           
+               
       ); // call the API function
       alert("Added Successfully");
 
@@ -85,8 +89,10 @@ function View() {
       setAge("");
       setIsPwd("");
       setLofY("");
-      setIsIp("");
+      setIsIp(""); // Reset the default value of is_ip radio group to null
       setIsHead("");
+      setSenior("");
+       // Reset the default value of is_head radio group to null
     } catch (error) {
       alert("Failed");
     }
@@ -100,28 +106,19 @@ function View() {
     handleChange(event); // Call handleChange to update formData state as well
   };
 
-  const handlelengthofyearChange = (event) => {
-    const lofy = new Date(event.target.value);
+    const handlelengthofyearChange = (event) => {
+   const lofy = new Date(event.target.value);
     const today = new Date();
     const length_of_year_count = today.getFullYear() - lofy.getFullYear();
     setLofY(length_of_year_count);
     handleChange(event); // Call handleChange to update formData state as well
   };
 
-  const [barangayList, setBarangayList] = useState([]);
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayList();
-      setBarangayList(data);
-    };
-
-    fetchItems();
-  }, []);
-
+  const barangayEntries = BarangayList();
   const municipalityEntries = MunicipalityList();
   const [filteredBarangayEntries, setFilteredBarangayEntries] = useState([]);
 
-  // console.log("Barangays: ", barangayList);
+  // console.log("Barangays: ", barangayEntries);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -129,7 +126,7 @@ function View() {
 
     if (name === "municipality") {
       // Filter barangay entries based on the selected municipality
-      const filteredBarangays = barangayList.filter(
+      const filteredBarangays = barangayEntries.filter(
         (barangay) => barangay.municipality === value
       );
       setFilteredBarangayEntries(filteredBarangays);
@@ -139,9 +136,11 @@ function View() {
   const handleClear = (event) => {
     setFormData({});
     setAge("");
+
     setIsPwd("");
     setIsIp("");
     setIsHead("");
+    setSenior("");
     setLofY("");
   };
 
@@ -253,14 +252,15 @@ function View() {
                       </option>
                     ))}
                 </Select>
-                <FormLabel>Length of Year</FormLabel>
+
+                 <FormLabel>Residency</FormLabel>
                 <Flex justify={"space-between"} gap={2}>
                   <Input
                     required
                     type="date"
                     id="length_of_year-field"
                     name="length_of_year"
-                    placeholder="Length of Year"
+                    placeholder="Residency"
                     value={formData.length_of_year || ""}
                     onChange={(event) => {
                       handleChange(event);
@@ -279,6 +279,7 @@ function View() {
                     value={length_of_year_count}
                   />
                 </Flex>
+
               </Flex>
               <Flex direction={"column"} w={"100%"}>
                 <FormLabel>Contact Number</FormLabel>
@@ -340,7 +341,7 @@ function View() {
                 </Select>
                 <FormLabel>Household Number</FormLabel>
                 <Input
-                  // required
+                  
                   type="text"
                   id="household_num-field"
                   name="household_num"
@@ -371,7 +372,7 @@ function View() {
                     }
                   }}
                 />
-                <FormLabel>Street</FormLabel>
+                 <FormLabel>Street</FormLabel>
                 <Input
                   required
                   id="street_add-field"
@@ -381,6 +382,7 @@ function View() {
                   onChange={handleChange}
                 />
               </Flex>
+              
               <Flex direction={"column"}>
                 <Flex
                   direction={"column"}
@@ -427,6 +429,19 @@ function View() {
                         <Radio value="MEMBER">No</Radio>
                       </Stack>
                     </RadioGroup>
+                   < FormLabel>Senior</FormLabel>
+                    <RadioGroup
+                      required
+                      id="is_senior-field"
+                      name="is_senior"
+                      defaultValue={is_senior}
+                      value={is_senior}
+                      onChange={(value) => setSenior(value)}>
+                      <Stack spacing={4} direction="row">
+                        <Radio value="SENIOR">Yes</Radio>
+                        <Radio value="NOT SENIOR">No</Radio>
+                      </Stack>
+                    </RadioGroup>
                   </Flex>
 
                   <Flex gap={5}>
@@ -452,6 +467,7 @@ function View() {
                   </Flex>
                 </Flex>
               </Flex>
+              
             </Flex>
           </FormControl>
         </form>

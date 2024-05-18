@@ -13,45 +13,27 @@ import {
 } from "@chakra-ui/react";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { ItemAdd } from "api/itemAPI";
-
 import { useHistory } from "react-router-dom";
-import { ItemList } from "api/itemAPI";
-
-const AddModal = ({
-  entries,
-  setEntries,
-  isOpen: isOpenAddModal,
-  onClose: onCloseAddModal,
-  initialRef,
-  finalRef,
-}) => {
+const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const history = useHistory();
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const result = await ItemAdd(
         event.target.name.value,
-        event.target.unit.value
-      );
-
-      const updatedItems = await ItemList();
-      setEntries(updatedItems);
-      onCloseAddModal();
+        event.target.unit.value ); 
+      onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
-      alert("Failed");
-    }
-  };
-
+      alert("Failed");}};
   const [date, setDate] = useState(new Date());
   const formattedDate = date.toISOString().slice(0, 10);
-
   return (
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpenAddModal}
-      onClose={onCloseAddModal}
+      isOpen={isOpen}
+      onClose={onClose}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -67,8 +49,7 @@ const AddModal = ({
                 id="name-field"
                 name="name"
                 ref={initialRef}
-                placeholder="Name"
-              />
+                placeholder="Name"/>
               <FormLabel>Unit</FormLabel>
               <Input
                 required
@@ -76,21 +57,18 @@ const AddModal = ({
                 id="unit-field"
                 name="unit"
                 ref={initialRef}
-                placeholder="Unit (eg. kg, pcs, galloon)"
-              />
+                placeholder="Unit (eg. kg, pcs, galloon)"/>
             </FormControl>
           </ModalBody>
-
           <ModalFooter>
             <Button colorscheme="blue" mr={3} type="submit">
               Add
             </Button>
-            <Button onClick={onCloseAddModal}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>
     </Modal>
   );
 };
-
 export default AddModal;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const EvacueeReport = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const EvacueeReport = () => {
   }, []);
 
   const getReport = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/resident/");
+    let response = await fetch(`${BASE_URL}/api/resident/`);
     let data = await response.json();
     setEntries(data);
   };
@@ -24,7 +25,7 @@ export const BarangayReportItem = () => {
   }, []);
 
   const getReport = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/barangay/");
+    let response = await fetch(`${BASE_URL}/api/barangay/`);
     let data = await response.json();
     setEntries(data);
   };

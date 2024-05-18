@@ -1,8 +1,20 @@
-export const DistributeBarangayInventoryList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/distributionbarangay");
-  let data = await response.json();
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-  return data;
+export const DistributeBarangayInventoryList = () => {
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    getItem();
+  }, []);
+
+  const getItem = async () => {
+    let response = await fetch(`${BASE_URL}/api/distributionbarangay`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
 
 export const DistributeBarangayInventoryAdd = async (
@@ -13,24 +25,20 @@ export const DistributeBarangayInventoryAdd = async (
   date
 ) => {
   try {
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/distributionbarangay/",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          // id: null,
-          item: item,
-          unit: unit,
-          qty: qty,
-          barangay: barangay,
-          date: date,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/distributionbarangay/`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        item: item,
+        unit: unit,
+        qty: qty,
+        barangay: barangay,
+        date: date,
+      }),
+    });
     const data = await response.json();
     return data;
   } catch (error) {
@@ -48,25 +56,21 @@ export const DistributeBarangayInventoryUpdate = async (
   date
 ) => {
   try {
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/distributionbarangay/" + id,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          item: item,
-          unit: unit,
-          qty: qty,
-          barangay: barangay,
-          date: date,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/distributionbarangay/${id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        item: item,
+        unit: unit,
+        qty: qty,
+        barangay: barangay,
+        date: date,
+      }),
+    });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -75,17 +79,19 @@ export const DistributeBarangayInventoryUpdate = async (
 };
 
 export const DistributeBarangayInventoryDelete = (id) => {
-  fetch("http://127.0.0.1:8000/api/distributionbarangay/" + id, {
-    method: "DELETE",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    // .then(() => {
-    //   alert("Deleted!");
-    // })
-    .catch((error) => {
-      console.log(error);
-    });
+  if (window.confirm("Are you sure?")) {
+    fetch(`${BASE_URL}/api/distributionbarangay/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then(() => {
+        alert("Deleted!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };

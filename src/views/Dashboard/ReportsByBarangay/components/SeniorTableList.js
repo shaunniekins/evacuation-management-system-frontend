@@ -34,7 +34,7 @@ import { resEvacList, resEvacDelete } from "api/residentInEvacuationAPI";
 import { EvacuationCenterList } from "api/evacuationCenterAPI";
 // import { EvacueeList } from "api/evacueeAPI";
 
-const TableList = ({ startDate, endDate }) => {
+const SeniorTableList = ({ startDate, endDate }) => {
   // const textColor = useColorModeValue("gray.700", "white");
   const iconTeal = useColorModeValue("blue.300", "blue.300");
   const textColor = useColorModeValue("gray.700", "white");
@@ -145,7 +145,7 @@ const evacueeIdToAge = (id) => {
                 </Text></Td>
         </Tr>  <Tr >  <Td colspan="8"><Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>
               
-             List of Evacuee{" "}
+             List of Senior{" "}
                 </Text></Td>
               </Tr>
               <Tr my=".8rem" pl="0px"textAlign={"center"}>
@@ -164,22 +164,22 @@ const evacueeIdToAge = (id) => {
                 </Th> */}
               </Tr>
             </Thead>
-            <Tbody>
-              {filteredEvacueesList.map((row, index) => (
-                <Tr key={index} color={textColor} cursor="pointer" p="9px" >
-                  {/* <Td>{row.id}</Td> */}
-                  <Td  p="9px" >{evacueeIdToName(row.resident)}</Td>
-                  <Td p="9px" >{evacueeIdToAge(row.resident)}</Td>
-                  <Td p="9px" >{evacueeIdToGender(row.resident)}</Td>
-                  <Td p="9px" >{evacueeIdToPWD(row.resident)}</Td>
-                  <Td p="9px" >{evacueeIdToIp(row.resident)}</Td>
-                  <Td p="9px" >{evacueeIdToSenior(row.resident)}</Td>
-                  <Td p="9px" >{centerIdToName(row.evacuation)}</Td>
-              
-                  <Td p="9px" >{row.date}</Td>
-            
-                </Tr>
-              ))}
+            <Tbody >
+          {filteredEvacueesList.map((row, index) =>
+  evacueeIdToSenior(row.resident) === "SENIOR" ? (
+    <Tr key={index} color={textColor} cursor="pointer" p="9px" >
+      <Td p="9px">{evacueeIdToName(row.resident)}</Td>
+      <Td p="9px">{evacueeIdToAge(row.resident)}</Td>
+      <Td p="9px">{evacueeIdToGender(row.resident)}</Td>
+      <Td p="9px">{evacueeIdToPWD(row.resident)}</Td>
+      <Td p="9px">{evacueeIdToIp(row.resident)}</Td>
+      <Td p="9px">{evacueeIdToSenior(row.resident)}</Td>
+      <Td p="9px">{centerIdToName(row.evacuation)}</Td>
+      <Td p="9px">{row.date}</Td>
+    </Tr>
+  ) : null
+)}
+
             </Tbody>
           </Table>
         </TableContainer>
@@ -188,4 +188,4 @@ const evacueeIdToAge = (id) => {
   );
 };
 
-export default TableList;
+export default SeniorTableList;

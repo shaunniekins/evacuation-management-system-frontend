@@ -15,19 +15,16 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { ItemUpdate } from "api/itemAPI";
 
 import { useHistory } from "react-router-dom";
-import { ItemList } from "api/itemAPI";
 
 const UpdateModal = ({
-  entries,
-  setEntries,
-  isOpen: isOpenUpdateModal,
-  onClose: onCloseUpdateModal,
+  id,
+  name,
+  unit,
+  isOpen,
+  onClose,
   initialRef,
   finalRef,
-  selectedRow,
 }) => {
-  const { id, name, unit } = selectedRow || {};
-
   const history = useHistory();
 
   const handleSubmit = async (event) => {
@@ -38,10 +35,8 @@ const UpdateModal = ({
         event.target.name.value,
         event.target.unit.value
       );
-      const updatedItems = await ItemList();
-      setEntries(updatedItems);
-
-      onCloseUpdateModal();
+      onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -51,8 +46,8 @@ const UpdateModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpenUpdateModal}
-      onClose={onCloseUpdateModal}
+      isOpen={isOpen}
+      onClose={onClose}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -88,7 +83,7 @@ const UpdateModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Update
             </Button>
-            <Button onClick={onCloseUpdateModal}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

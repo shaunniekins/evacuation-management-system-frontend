@@ -14,28 +14,21 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { cashDonationUpdate } from "api/cashDonationAPI";
 
 import { useHistory } from "react-router-dom";
-import { cashDonationList } from "api/cashDonationAPI";
 
 const UpdateModal = ({
-  entries,
-  setEntries,
-  // id,
-  // controlNumber,
-  // givenBy,
-  // donor,
-  // amount,
-  // modeOfTransfer,
-  // date,
-  isOpen: isOpenUpdateModal,
-  onClose: onCloseUpdateModal,
+  id,
+  controlNumber,
+  givenBy,
+  donor,
+  amount,
+  modeOfTransfer,
+  date,
+  isOpen,
+  onClose,
   initialRef,
   finalRef,
-  selectedRow,
 }) => {
   const history = useHistory();
-
-  const { id, controlNumber, givenBy, donor, amount, modeOfTransfer, date } =
-    selectedRow || {};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -49,10 +42,8 @@ const UpdateModal = ({
         event.target.modeOfTransfer.value,
         event.target.date.value
       ); // call the API function
-      const updatedItems = await cashDonationList();
-      setEntries(updatedItems);
-
-      onCloseUpdateModal();
+      onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -62,8 +53,8 @@ const UpdateModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpenUpdateModal}
-      onClose={onCloseUpdateModal}
+      isOpen={isOpen}
+      onClose={onClose}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -144,7 +135,7 @@ const UpdateModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Update
             </Button>
-            <Button onClick={onCloseUpdateModal}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

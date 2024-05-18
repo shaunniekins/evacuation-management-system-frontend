@@ -1,13 +1,25 @@
-export const BarangayList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/barangay");
-  let data = await response.json();
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-  return data;
+export const BarangayList = () => {
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    getBarangay();
+  }, []);
+
+  const getBarangay = async () => {
+    let response = await fetch(`${BASE_URL}/api/barangay`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
 
 export const BarangayAdd = async (name, municipality) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/barangay/", {
+    const response = await fetch(`${BASE_URL}/api/barangay/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -29,7 +41,7 @@ export const BarangayAdd = async (name, municipality) => {
 
 export const BarangayUpdate = async (id, name, municipality) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/barangay/" + id, {
+    const response = await fetch(`${BASE_URL}/api/barangay/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -51,7 +63,7 @@ export const BarangayUpdate = async (id, name, municipality) => {
 
 export const BarangayDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/barangay/" + id, {
+    fetch(`${BASE_URL}/api/barangay/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

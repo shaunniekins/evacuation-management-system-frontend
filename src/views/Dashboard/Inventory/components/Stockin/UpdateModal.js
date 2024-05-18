@@ -18,85 +18,82 @@ import { ItemList } from "api/itemAPI";
 import { InventoryList, InventoryUpdate } from "api/inventoryAPI";
 
 import { useHistory } from "react-router-dom";
-import { StockinList } from "api/stockinAPI";
 
 const UpdateModal = ({
-  entries,
-  setEntries,
-  inventoryList,
-  setInventoryList,
   addEntries,
-  isOpen: isOpenUpdateModal,
-  onClose: onCloseUpdateModal,
+  id,
+  givenBy,
+  donor,
+  dateReceived,
+ 
+  itemID,
+   expir_date,
+  // unit,
+  qty,
+  isOpen,
+  onClose,
   initialRef,
   finalRef,
-  selectedRow,
 }) => {
-  const { id, givenBy, donor, dateReceived, item, expir_date, qty } =
-    selectedRow || {};
+  const inventoryList = InventoryList();
 
-  let itemID = item;
+  // console.log("AddEntries: ", addEntries);
   const history = useHistory();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const givenBy = event.target.givenBy.value;
     const donor = event.target.donor.value;
     const dateReceived = event.target.dateReceived.value;
-    const itemIDValueSubmit = itemIDValue;
-    const expir_date = event.target.expir_date.value;
-    const preQty = parseFloat(parseFloat(qty).toFixed(1));
-    const newQty = parseFloat(parseFloat(event.target.qty.value).toFixed(1));
+   
+    const itemIDValueSubmit = itemIDValue; // assume this function retrieves the item ID
+          const expir_date = event.target.expir_date.value;
+    const preQty = qty;
+    const newQty = event.target.qty.value;
+   
 
     try {
-      await StockinUpdate(
+      const result = await StockinUpdate(
         id,
         givenBy,
         donor,
         dateReceived,
         expir_date,
+        // event.target.item.value,
         itemIDValueSubmit,
+        // event.target.unit.value,
         newQty
-      );
+      ); // call the API function
     } catch (error) {
       alert("Failed");
-      console.log("error", error);
     }
 
     try {
       if (inventoryList) {
         inventoryList.map(async (entry) => {
-          if (entry.item === parseInt(itemIDValueSubmit)) {
-            let computedQty = entry.qty - preQty + newQty;
-            await InventoryUpdate(entry.id, itemIDValueSubmit, computedQty);
-          }
+          // if (entry.item === parseInt(itemIDValueSubmit)) {
+          let computedQty =
+            parseFloat(entry.qty) - parseFloat(preQty) + parseFloat(newQty);
+          const resultInventory = await InventoryUpdate(
+            entry.id,
+            itemIDValueSubmit,
+            computedQty
+          );
+          // }
         });
       }
 
-      const updatedItems = await StockinList();
-      setEntries(updatedItems);
-
-      onCloseUpdateModal();
+      onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
-      console.log("error", error);
     }
   };
   const [itemName, setItemName] = useState("");
+  const [itemUnit, setItemUnit] = useState("");
   const [unitValue, setUnitValue] = useState("itemUnit");
 
-  // const entry1 = ItemList();
-  const [entry1, setEntry1] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-      setEntry1(data);
-    };
-
-    fetchItems();
-  }, []);
+  const entry1 = ItemList();
 
   const selectedItem = entry1.find((item) => item.id === itemID);
 
@@ -109,14 +106,9 @@ const UpdateModal = ({
       setUnitValue("");
     }
   }, [selectedItem]);
-
   const [itemIDValue, setItemIDValue] = useState(itemID);
 
-  useEffect(() => {
-    setItemIDValue(itemID);
-  }, [itemID]);
-
-  useEffect(() => {
+  React.useEffect(() => {
     // document.body.style.overflow = "unset";
     // Specify how to clean up after this effect:
     return function cleanup() {};
@@ -139,17 +131,17 @@ const UpdateModal = ({
     }
 
     const selectedOption = event.target.options[event.target.selectedIndex];
-    const selectedID = parseInt(selectedOption.getAttribute("data-id"));
-    // console.log("selectedID: ", selectedID);
+    const selectedID = selectedOption.getAttribute("data-id");
     setItemIDValue(selectedID);
   };
 
   return (
     <Modal
       initialFocusRef={initialRef}
+ 
       finalFocusRef={finalRef}
-      isOpen={isOpenUpdateModal}
-      onClose={onCloseUpdateModal}
+      isOpen={isOpen}
+      onClose={onClose}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -194,7 +186,7 @@ const UpdateModal = ({
                 ref={initialRef}
                 placeholder="Date Received"
               />
-              <FormLabel>Expiration Date</FormLabel>
+               <FormLabel>Expiration Date</FormLabel>
               <Input
                 required
                 type="date"
@@ -274,7 +266,7 @@ const UpdateModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Update
             </Button>
-            <Button onClick={onCloseUpdateModal}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

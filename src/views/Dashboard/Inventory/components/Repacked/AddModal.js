@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import {
   Box,
@@ -49,41 +49,12 @@ const AddModal = ({
   // console.log("userBarangay: ", userBarangay);
 
   const inventoryList = InventoryList();
-
-  const [barangayInventoryList, setBarangayInventoryList] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayInventoryList();
-      setBarangayInventoryList(data);
-    };
-
-    fetchItems();
-  }, []);
-
-  const [barangayList, setBarangayList] = useState([]);
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayList();
-      setBarangayList(data);
-    };
-
-    fetchItems();
-  }, []);
+  const barangayInventoryList = BarangayInventoryList();
+  const barangayList = BarangayList();
 
   const [unitValue, setUnitValue] = useState("");
 
-  // const entry1 = ItemList();
-  const [entry1, setEntry1] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-      setEntry1(data);
-    };
-
-    fetchItems();
-  }, []);
+  const entry1 = ItemList();
 
   let barangayID = null;
   for (const barangay of barangayList) {
@@ -141,149 +112,181 @@ const AddModal = ({
     setInputs(newInputs);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const namesString = inputs.map((input) => input.item).join(", ");
-    const qtyString = inputs.map((input) => input.qty).join(", ");
-    const unitsString = unitsValues.join(", ");
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   const namesString = inputs.map((input) => input.item).join(", ");
+  //   const qtyString = inputs.map((input) => input.qty).join(", ");
+  //   const unitsString = unitsValues.join(", ");
 
-    const items = namesString;
-    const units = unitsString;
-    const qty = qtyString;
-    const instance = parseInt(event.target.deliverables.value);
-    const reason = event.target.reason.value;
+  //   const items = namesString;
+  //   const units = unitsString;
+  //   const qty = qtyString;
+  //   const instance = parseInt(event.target.deliverables.value);
+  //   const reason = event.target.reason.value;
 
-    // try {
-    //   const result = await RepackedAdd(
-    //     items,
-    //     units,
-    //     qty,
-    //     instance,
-    //     reason,
-    //     userBarangay
-    //   );
-    // } catch (error) {
-    //   alert("Failed");
-    // }
+  //   try {
+  //     const result = await RepackedAdd(
+  //       items,
+  //       units,
+  //       qty,
+  //       instance,
+  //       reason,
+  //       userBarangay
+  //     );
+  //   } catch (error) {
+  //     alert("Failed");
+  //   }
 
-    const itemsArr = namesString.split(","); // convert to array
-    const unitsArr = units.split(",");
-    const qtyArr = qtyString.split(","); // convert to array
-    let hasExceededInventory = false; // Flag to track if any item exceeds the inventory
+  //   const itemsArr = namesString.split(","); // convert to array
+  //   const unitsArr = units.split(",");
+  //   const qtyArr = qtyString.split(","); // convert to array
 
-    try {
-      for (let i = 0; i < itemsArr.length; i++) {
-        const item = parseInt(itemsArr[i].trim());
-        const qtyEach = qtyArr[i].trim();
-        const unit = unitsArr[i].trim();
+  //   try {
+  //     for (let i = 0; i < itemsArr.length; i++) {
+  //       const item = parseInt(itemsArr[i].trim());
 
-        const matchingBarangayName = barangayList.find(
-          (barangayItem) => barangayItem.name === userBarangay
-        );
+  //       const matchingBarangayName = barangayList.find(
+  //         (barangayItem) => barangayItem.name === userBarangay
+  //       );
 
-        const matchingInventoryItem = barangayInventoryList.find(
-          (inventoryItem) => inventoryItem.item === item
-        );
+  //       const matchingInventoryItem = barangayInventoryList.find(
+  //         (inventoryItem) => inventoryItem.item === item
+  //       );
 
-        const id = matchingInventoryItem ? matchingInventoryItem.id : undefined;
-        const qtyToUpdate = matchingInventoryItem
-          ? parseFloat(matchingInventoryItem.qty) -
-            parseFloat(qtyEach) * instance
-          : -parseFloat(qtyEach);
-        const barangay = matchingBarangayName ? matchingBarangayName.id : "";
+  //       const id = matchingInventoryItem ? matchingInventoryItem.id : undefined;
+  //       const qtyEach = qtyArr[i].trim();
+  //       const qty = matchingInventoryItem
+  //         ? parseFloat(matchingInventoryItem.qty) -
+  //           parseFloat(qtyEach) * instance
+  //         : -parseFloat(qtyEach);
+  //       const unit = unitsArr[i].trim();
+  //       const barangay = matchingBarangayName ? matchingBarangayName.id : "";
 
-        let itemExists = matchingInventoryItem !== undefined;
+  //       let itemExists = matchingInventoryItem !== undefined;
 
-        if (itemExists) {
-          const updatedQty =
-            parseFloat(matchingInventoryItem.qty) -
-            parseFloat(qtyEach) * instance;
-          if (updatedQty < 0) {
-            const itemEntry = entry1.find((entry) => entry.id === item);
-            alert(
-              `The input value of ${qtyEach} ${unit} of ${
-                itemEntry ? itemEntry.name : ""
-              } exceeds the available inventory.`
-            );
-            hasExceededInventory = true;
-            break; // Exit the loop if any item exceeds the inventory
-          }
-        }
+  //       if (itemExists) {
+  //         await BarangayInventoryUpdate(id, item, unit, qty, barangay);
+  //       } else {
+  //         await BarangayInventoryAdd(item, unit, qtyEach, barangay);
+  //       }
+  //     }
+  //     onClose();
+  //     history.push("/admin/dashboard");
+  //   } catch (error) {
+  //     alert("Failed");
+  //   }
+  // };
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  const namesString = inputs.map((input) => input.item).join(", ");
+  const qtyString = inputs.map((input) => input.qty).join(", ");
+  const unitsString = unitsValues.join(", ");
 
-        if (!hasExceededInventory) {
-          if (itemExists) {
-            await BarangayInventoryUpdate(
-              id,
-              item,
-              unit,
-              qtyToUpdate,
-              barangay
-            );
-          } else {
-            const updatedQty = parseFloat(qtyEach) * instance;
-            await BarangayInventoryAdd(item, unit, updatedQty, barangay);
-          }
+  const items = namesString;
+  const units = unitsString;
+  const qty = qtyString;
+  const instance = parseInt(event.target.deliverables.value);
+  const reason = event.target.reason.value;
+
+  const itemsArr = namesString.split(","); // convert to array
+  const unitsArr = units.split(",");
+  const qtyArr = qtyString.split(","); // convert to array
+
+  let hasExceededInventory = false; // Flag to track if any item exceeds the inventory
+
+  try {
+    for (let i = 0; i < itemsArr.length; i++) {
+      const item = parseInt(itemsArr[i].trim());
+      const qtyEach = qtyArr[i].trim();
+      const unit = unitsArr[i].trim();
+
+      const matchingBarangayName = barangayList.find(
+        (barangayItem) => barangayItem.name === userBarangay
+      );
+
+      const matchingInventoryItem = barangayInventoryList.find(
+        (inventoryItem) => inventoryItem.item === item
+      );
+
+      const id = matchingInventoryItem ? matchingInventoryItem.id : undefined;
+      const qtyToUpdate = matchingInventoryItem
+        ? parseFloat(matchingInventoryItem.qty) - parseFloat(qtyEach) * instance
+        : -parseFloat(qtyEach);
+      const barangay = matchingBarangayName ? matchingBarangayName.id : "";
+
+      let itemExists = matchingInventoryItem !== undefined;
+
+      if (itemExists) {
+        const updatedQty = parseFloat(matchingInventoryItem.qty) - parseFloat(qtyEach) * instance;
+        if (updatedQty < 0) {
+          const itemEntry = entry1.find((entry) => entry.id === item);
+          alert(
+            `The input value of ${qtyEach} ${unit} of ${
+              itemEntry ? itemEntry.name : ""
+            } exceeds the available inventory.`
+          );
+          hasExceededInventory = true;
+          break; // Exit the loop if any item exceeds the inventory
         }
       }
 
       if (!hasExceededInventory) {
-        try {
-          const result = await RepackedAdd(
-            items,
-            units,
-            qty,
-            instance,
-            reason,
-            userBarangay
-          );
-          onClose();
-          history.push("/admin/dashboard");
-        } catch (error) {
-          // Revert the quantity of items that were updated
-          for (let i = 0; i < itemsArr.length; i++) {
-            const item = parseInt(itemsArr[i].trim());
-            const qtyEach = qtyArr[i].trim();
-            const unit = unitsArr[i].trim();
-
-            const matchingBarangayName = barangayList.find(
-              (barangayItem) => barangayItem.name === userBarangay
-            );
-
-            const matchingInventoryItem = barangayInventoryList.find(
-              (inventoryItem) => inventoryItem.item === item
-            );
-
-            const id = matchingInventoryItem
-              ? matchingInventoryItem.id
-              : undefined;
-            const qtyToUpdate = matchingInventoryItem
-              ? parseFloat(matchingInventoryItem.qty) +
-                parseFloat(qtyEach) * instance
-              : parseFloat(qtyEach);
-            const barangay = matchingBarangayName
-              ? matchingBarangayName.id
-              : "";
-
-            let itemExists = matchingInventoryItem !== undefined;
-
-            if (itemExists) {
-              await BarangayInventoryUpdate(
-                id,
-                item,
-                unit,
-                qtyToUpdate,
-                barangay
-              );
-            }
-          }
-
-          alert("Failed");
+        if (itemExists) {
+          await BarangayInventoryUpdate(id, item, unit, qtyToUpdate, barangay);
+        } else {
+          const updatedQty = parseFloat(qtyEach) * instance;
+          await BarangayInventoryAdd(item, unit, updatedQty, barangay);
         }
       }
-    } catch (error) {
-      alert("Failed");
     }
-  };
+
+    if (!hasExceededInventory) {
+      try {
+        const result = await RepackedAdd(
+          items,
+          units,
+          qty,
+          instance,
+          reason,
+          userBarangay
+        );
+        onClose();
+        history.push("/admin/dashboard");
+      } catch (error) {
+        // Revert the quantity of items that were updated
+        for (let i = 0; i < itemsArr.length; i++) {
+          const item = parseInt(itemsArr[i].trim());
+          const qtyEach = qtyArr[i].trim();
+          const unit = unitsArr[i].trim();
+
+          const matchingBarangayName = barangayList.find(
+            (barangayItem) => barangayItem.name === userBarangay
+          );
+
+          const matchingInventoryItem = barangayInventoryList.find(
+            (inventoryItem) => inventoryItem.item === item
+          );
+
+          const id = matchingInventoryItem ? matchingInventoryItem.id : undefined;
+          const qtyToUpdate = matchingInventoryItem
+            ? parseFloat(matchingInventoryItem.qty) + parseFloat(qtyEach) * instance
+            : parseFloat(qtyEach);
+          const barangay = matchingBarangayName ? matchingBarangayName.id : "";
+
+          let itemExists = matchingInventoryItem !== undefined;
+
+          if (itemExists) {
+            await BarangayInventoryUpdate(id, item, unit, qtyToUpdate, barangay);
+          }
+        }
+
+        alert("Failed");
+      }
+    }
+  } catch (error) {
+    alert("Failed");
+  }
+};
 
   return (
     <Modal

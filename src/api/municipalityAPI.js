@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const MunicipalityList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const MunicipalityList = () => {
   }, []);
 
   const getMunicipality = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/municipality");
+    let response = await fetch(`${BASE_URL}/api/municipality`);
     let data = await response.json();
     setEntries(data);
   };
@@ -18,7 +19,7 @@ export const MunicipalityList = () => {
 
 export const MunicipalityAdd = async (name, province) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/municipality/", {
+    const response = await fetch(`${BASE_URL}/api/municipality/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -40,22 +41,18 @@ export const MunicipalityAdd = async (name, province) => {
 
 export const MunicipalityUpdate = async (id, name, province) => {
   try {
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/municipality/" + id,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          province: province,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/municipality/${id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        province: province,
+      }),
+    });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -65,7 +62,7 @@ export const MunicipalityUpdate = async (id, name, province) => {
 
 export const MunicipalityDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/municipality/" + id, {
+    fetch(`${BASE_URL}/api/municipality/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

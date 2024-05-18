@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -29,17 +29,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const id = null;
 
   const [formData, setFormData] = useState({});
-
-  const [barangayList, setBarangayList] = useState([]);
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await BarangayList();
-      setBarangayList(data);
-    };
-
-    fetchItems();
-  }, []);
-
+  const barangayEntries = BarangayList();
   const municipalityEntries = MunicipalityList();
   const [filteredBarangayEntries, setFilteredBarangayEntries] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
@@ -107,7 +97,7 @@ const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
 
     if (name === "municipality") {
       // Filter barangay entries based on the selected municipality
-      const filteredBarangays = barangayList.filter(
+      const filteredBarangays = barangayEntries.filter(
         (barangay) => barangay.municipality === value
       );
       setFilteredBarangayEntries(filteredBarangays);

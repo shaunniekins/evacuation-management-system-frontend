@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const CalamityList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const CalamityList = () => {
   }, []);
 
   const getCalamity = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/calamity");
+    let response = await fetch(`${BASE_URL}/api/calamity`);
     let data = await response.json();
     setEntries(data);
   };
@@ -18,7 +19,7 @@ export const CalamityList = () => {
 
 export const CalamityAdd = async (name, date) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/calamity/", {
+    const response = await fetch(`${BASE_URL}/api/calamity/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -40,7 +41,7 @@ export const CalamityAdd = async (name, date) => {
 
 export const CalamityUpdate = async (id, name, date) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/calamity/" + id, {
+    const response = await fetch(`${BASE_URL}/api/calamity/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -62,7 +63,7 @@ export const CalamityUpdate = async (id, name, date) => {
 
 export const CalamityDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/calamity/" + id, {
+    fetch(`${BASE_URL}/api/calamity/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

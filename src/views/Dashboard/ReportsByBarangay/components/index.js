@@ -29,7 +29,9 @@ import CardHeader from "components/Card/CardHeader.js";
 import React from "react";
 // import EvacueeList from "./EvacueeList/View";
 import TableList from "./TableList";
-
+import SeniorTableList from "./SeniorTableList";
+import PWDTableList from "./PWDTableList";
+import IPTableList from "./IPTableList";
 import ReactToPrint from "react-to-print";
 import PrintableReports from "./PrintableReports";
 import { useReactToPrint } from "react-to-print";
@@ -40,6 +42,7 @@ import {
   PWDReport,
   AgeReport,
   IPReport,
+  SeniorReport
 } from "./Report";
 import { useRef } from "react";
 
@@ -74,7 +77,11 @@ const Report = () => {
     { name: "Gender Report", value: "gender" },
     { name: "PWD Report", value: "pwd" },
     { name: "IP Report", value: "ip" },
+    { name: "Senior Report", value: "is_senior" },
     { name: "Evacuee List", value: "table" },
+    { name: "Senior List", value: "senior" },
+    { name: "PWD List", value: "PWDList" },
+     { name: "Indigenous Peoples", value: "INPList" },
   ];
 
   const [showPrintDialog, setShowPrintDialog] = useState(false);
@@ -94,6 +101,12 @@ const Report = () => {
     switch (selectedReport) {
       case "evacuees":
         return <TableList startDate={startDate} endDate={endDate} />;
+      case "senior":
+        return <SeniorTableList startDate={startDate} endDate={endDate} />;
+      case "PWDList":
+        return <PWDTableList startDate={startDate} endDate={endDate} />;
+      case "INPList":
+        return <IPTableList startDate={startDate} endDate={endDate} />;
       case "gender":
         return <GenderReport startDate={startDate} endDate={endDate} />;
       case "barangay":
@@ -104,6 +117,8 @@ const Report = () => {
         return <AgeReport startDate={startDate} endDate={endDate} />;
       case "ip":
         return <IPReport startDate={startDate} endDate={endDate} />;
+      case "is_senior":
+        return <SeniorReport startDate={startDate} endDate={endDate} />;
       default:
         return <GenderReport startDate={startDate} endDate={endDate} />;
     }
@@ -173,11 +188,14 @@ const Report = () => {
                 bg="transparent"
                 h={12}>
                 <option value="evacuees">Evacuee List Report</option>
+                <option value="senior">Senior List Report</option>
+                <option value="PWDList">PWD List Report</option>
+                <option value="INPList">Indigenous Peoples</option>
                 <option value="gender">Gender Report</option>
                 <option value="barangay">Barangay Report</option>
                 <option value="pwd">PWD Report</option>
                 <option value="ip">IP Report</option>
-
+                <option value="is_senior">Senior Cetizen</option>
                 <option value="age">Age Report</option>
               </Select>
               <Flex justify={"flex-end"}>

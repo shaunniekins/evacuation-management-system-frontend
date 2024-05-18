@@ -41,11 +41,13 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     household_num,
     street_add,
     length_of_year,
+    is_senior
   } = data;
 
   const history = useHistory();
 
   const [age, setAge] = useState("");
+  
   const [length_of_year_count, setLofY] = useState("");
 
   useEffect(() => {
@@ -68,6 +70,9 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     return age;
   };
 
+
+
+
   useEffect(() => {
     if (length_of_year) {
       setAge(calculatelengthofyear(length_of_year));
@@ -75,7 +80,7 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
   }, [length_of_year]);
 
   const calculatelengthofyear = (LentghOfYear) => {
-    const today = new Date();
+      const today = new Date();
     const birthdateObj = new Date(LentghOfYear);
     let length_of_year_count = today.getFullYear() - birthdateObj.getFullYear();
     const monthDiff = today.getMonth() - birthdateObj.getMonth();
@@ -87,7 +92,6 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
     }
     return length_of_year_count;
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -109,7 +113,10 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
         event.target.is_head.value,
         event.target.household_num.value,
         event.target.street_add.value,
-        event.target.length_of_year.value
+        event.target.length_of_year.value,
+        event.target.is_senior.value
+            
+ 
       ); // call the API function
       onClose();
       history.push("/admin/resident-information");
@@ -126,11 +133,9 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
   const handleBirthdayChange = (event) => {
     setAge(calculateAge(event.target.value));
   };
-
-  const handleLofYChange = (event) => {
+ const handleLofYChange = (event) => {
     setLofY(calculatelengthofyear(event.target.value));
   };
-
   return (
     <Modal
       initialFocusRef={initialRef}
@@ -220,6 +225,7 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       ref={initialRef}
                       placeholder="Barangay"
                     />
+
                     <FormLabel>Length Of Year</FormLabel>
                     <Flex justify={"space-between"} gap={2}>
                       <Input
@@ -244,6 +250,7 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       />
                     </Flex>
                   </Flex>
+                  
                   <Flex direction={"column"}>
                     {/* </Stack>
                     <Stack spacing={4} direction="row"> */}
@@ -350,6 +357,17 @@ const UpdateModal = ({ isOpen, onClose, initialRef, finalRef, ...data }) => {
                       <Stack spacing={4} direction="row">
                         <Radio value="HEAD">Yes</Radio>
                         <Radio value="MEMBER">No</Radio>
+                      </Stack>
+                    </RadioGroup>
+                    <FormLabel>Senior Citizens</FormLabel>
+                    <RadioGroup
+                      required
+                      name="is_senior"
+                      defaultValue={is_senior}
+                      value={is_senior}>
+                      <Stack spacing={4} direction="row">
+                        <Radio value="SENIOR">Yes</Radio>
+                        <Radio value="NOT SENIOR">No</Radio>
                       </Stack>
                     </RadioGroup>
                   </Flex>

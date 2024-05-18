@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-export const cashDonationList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/cashdonation");
-  let data = await response.json();
+export const cashDonationList = () => {
+  const [entries, setEntries] = useState([]);
 
-  return data;
+  useEffect(() => {
+    getCashDonation();
+  }, []);
+
+  const getCashDonation = async () => {
+    let response = await fetch(`${BASE_URL}/api/cashdonation`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
 
 export const cashDonationAdd = async (
@@ -16,7 +26,7 @@ export const cashDonationAdd = async (
   date
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/cashdonation/", {
+    const response = await fetch(`${BASE_URL}/api/cashdonation/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -51,7 +61,7 @@ export const cashDonationUpdate = async (
 ) => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/cashdonation/" + id,
+      `${BASE_URL}/api/cashdonation/${id}`,
       {
         method: "PUT",
         headers: {
@@ -78,17 +88,19 @@ export const cashDonationUpdate = async (
 };
 
 export const cashDonationDelete = (id) => {
-  fetch("http://127.0.0.1:8000/api/cashdonation/" + id, {
-    method: "DELETE",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then(() => {
-      alert("Deleted!");
+  if (window.confirm("Are you sure?")) {
+    fetch(`${BASE_URL}/api/cashdonation/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then(() => {
+        alert("Deleted!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };

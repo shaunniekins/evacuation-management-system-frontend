@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const UsersList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const UsersList = () => {
   }, []);
 
   const getUsers = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/users/");
+    let response = await fetch(`${BASE_URL}/api/users/`);
     let data = await response.json();
     setEntries(data);
   };
@@ -29,10 +30,10 @@ export const UserAdd = async (
   barangay,
   position,
   contact_number,
-  imageFile // pass the image file as a separate argument
+  imageFile 
 ) => {
   try {
-    const formData = new FormData(); // create a new FormData object
+    const formData = new FormData();
     formData.append("id", null);
     formData.append("password", password);
     formData.append("is_superuser", is_superuser);
@@ -45,11 +46,11 @@ export const UserAdd = async (
     formData.append("barangay", barangay);
     formData.append("position", position);
     formData.append("contact_number", contact_number);
-    formData.append("image", imageFile); // append the image file to the FormData object
+    formData.append("image", imageFile);
 
-    const response = await fetch("http://127.0.0.1:8000/api/users/", {
+    const response = await fetch(`${BASE_URL}/api/users/`, {
       method: "POST",
-      body: formData, // send the FormData object as the request body
+      body: formData, 
     });
     const data = await response.json();
     return data;
@@ -90,15 +91,14 @@ export const UserUpdate = async (
     formData.append("barangay", barangay);
     formData.append("position", position);
     formData.append("contact_number", contact_number);
-    formData.append("image", imageFile); // append the image file to the FormData object
+    formData.append("image", imageFile); 
 
-    const response = await fetch("http://127.0.0.1:8000/api/users/" + id, {
+    const response = await fetch(`${BASE_URL}/api/users/${id}`, {
       method: "PUT",
       body: formData,
     });
 
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -108,7 +108,7 @@ export const UserUpdate = async (
 
 export const UserDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/users/" + id, {
+    fetch(`${BASE_URL}/api/users/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

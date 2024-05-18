@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const resEvacList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const resEvacList = () => {
   }, []);
 
   const getResEvac = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/resident_evacuation");
+    let response = await fetch(`${BASE_URL}/api/resident_evacuation`);
     let data = await response.json();
     setEntries(data);
   };
@@ -19,7 +20,7 @@ export const resEvacList = () => {
 export const resEvacAdd = async (resident, evacuation, isHead, date) => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/resident_evacuation/",
+      `${BASE_URL}/api/resident_evacuation/`,
       {
         method: "POST",
         headers: {
@@ -45,7 +46,7 @@ export const resEvacAdd = async (resident, evacuation, isHead, date) => {
 export const resEvacUpdate = async (id, resident, evacuation, isHead, date) => {
   try {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/resident_evacuation/" + id,
+      `${BASE_URL}/api/resident_evacuation/${id}`,
       {
         method: "PUT",
         headers: {
@@ -61,7 +62,6 @@ export const resEvacUpdate = async (id, resident, evacuation, isHead, date) => {
       }
     );
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -71,7 +71,7 @@ export const resEvacUpdate = async (id, resident, evacuation, isHead, date) => {
 
 export const resEvacDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/resident_evacuation/" + id, {
+    fetch(`${BASE_URL}/api/resident_evacuation/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

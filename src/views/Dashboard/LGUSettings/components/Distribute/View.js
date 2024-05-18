@@ -1,4 +1,5 @@
 // Chakra imports
+
 import {
   Button,
   Flex,
@@ -7,6 +8,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+
 // Custom components
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
@@ -18,7 +20,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
 import DistributeRow from "./DistributeRow";
-// import { StockinList } from "api/stockinAPI";
+import { StockinList } from "api/stockinAPI";
 import { ItemList } from "api/itemAPI";
 import { evacDistributeList } from "api/distributedEvacuees";
 
@@ -86,7 +88,7 @@ const View = () => {
     );
   });
 
-  // const addEntries = ItemList();
+  const addEntries = ItemList();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -223,6 +225,7 @@ const View = () => {
             <PrintableDistribution ref={componentRef} />
           </>
         )}
+     
       </Card>
       <AddModal
         userBarangay={userBarangay}

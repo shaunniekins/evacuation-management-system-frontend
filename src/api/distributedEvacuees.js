@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const evacDistributeList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const evacDistributeList = () => {
   }, []);
 
   const getItem = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/distributed");
+    let response = await fetch(`${BASE_URL}/api/distributed`);
     let data = await response.json();
     setEntries(data);
   };
@@ -26,7 +27,7 @@ export const evacDistributeAdd = async (
   is_distributed
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/distributed/", {
+    const response = await fetch(`${BASE_URL}/api/distributed/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -61,27 +62,23 @@ export const evacDistributeUpdate = async (
   is_distributed
 ) => {
   try {
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/distributed/" + id,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          repackedItem: repackedItem,
-          calamity: calamity,
-          calamityDate: calamityDate,
-          dateDistributed: dateDistributed,
-          evacuee: evacuee,
-          headFamily: headFamily,
-          is_distributed: is_distributed,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/distributed/${id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        repackedItem: repackedItem,
+        calamity: calamity,
+        calamityDate: calamityDate,
+        dateDistributed: dateDistributed,
+        evacuee: evacuee,
+        headFamily: headFamily,
+        is_distributed: is_distributed,
+      }),
+    });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -91,7 +88,7 @@ export const evacDistributeUpdate = async (
 
 export const evacDistributeDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/distributed/" + id, {
+    fetch(`${BASE_URL}/api/distributed/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

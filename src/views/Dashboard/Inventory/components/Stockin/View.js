@@ -19,19 +19,16 @@ import {
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { FaPencilAlt,FaPrint } from "react-icons/fa";
 
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-// import StockinRow from "./StockinRow-archived";
+import StockinRow from "./StockinRow";
 import { StockinList } from "api/stockinAPI";
 import { ItemList } from "api/itemAPI";
-import UpdateModal from "./UpdateModal";
-import { InventoryList } from "api/inventoryAPI";
-import { StockinDelete } from "api/stockinAPI";
-import { InventoryUpdate } from "api/inventoryAPI";
+import StockinBarChart from "./StockinBarChart";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
@@ -45,112 +42,33 @@ const View = () => {
   // console.log("stockin: ", StockinList());
   const [query, setQuery] = useState("");
 
-  const [entries, setEntries] = useState([]);
 
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await StockinList();
+  const entries = StockinList().filter(
+    (entry) =>
+      entry.givenBy.toLowerCase().includes(query.toLowerCase()) ||
+      entry.unit.toLowerCase().includes(query.toLowerCase())||
+      entry.dateReceived.toLowerCase().includes(query.toLowerCase())
+    
+    // entry.unit.toLowerCase().includes(query.toLowerCase())
+  );
 
-      const filteredEntries = data.filter(
-        (entry) =>
-          entry.givenBy.toLowerCase().includes(query.toLowerCase()) ||
-          entry.item.toLowerCase().includes(query.toLowerCase())
-      );
-      setEntries(filteredEntries);
-      // console.log("filteredEntries", filteredEntries);
-    };
 
-    fetchItems();
-  }, [query]);
-
-  const [addEntries, setAddEntries] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await ItemList();
-      setAddEntries(data);
-    };
-
-    fetchItems();
-  }, []);
-
-  const {
-    isOpen: isOpenAddModal,
-    onOpen: onOpenAddModal,
-    onClose: onCloseAddModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenUpdateModal,
-    onOpen: onOpenUpdateModal,
-    onClose: onCloseUpdateModal,
-  } = useDisclosure();
-
-  const [selectedRow, setSelectedRow] = useState(null);
-
-  const handleEditClick = (row) => {
-    setSelectedRow(row);
-    onOpenUpdateModal();
-  };
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-
-  const [inventoryList, setInventoryList] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await InventoryList();
-      setInventoryList(data);
-      // console.log("data", data);
-    };
-
-    fetchItems();
-  }, []);
-
-  const handleDelete = async (id, itemID, qty) => {
-    // const itemIDValueSubmit = itemID;
-    const preQty = qty;
-
-    try {
-      for (const entry of inventoryList) {
-        // console.log("entry.id", entry.item);
-        // console.log("itemID", itemID);
-
-        if (parseInt(entry.item) === parseInt(itemID)) {
-          let computedQty = parseFloat(entry.qty) - parseFloat(preQty);
-          await InventoryUpdate(entry.id, itemID, computedQty);
-        }
-      }
-
-      await StockinDelete(id);
-      setEntries(entries.filter((item) => item.id !== id));
-    } catch (error) {
-      alert("Failed");
-      console.log(error);
-    }
-  };
-
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      const fetchedItems = await ItemList();
-      setItems(fetchedItems);
-    };
-
-    fetchItems();
-  }, []);
-
-  const columns = [
-    "ITEM",
-    "from Organization",
-    "DATE RECEIVED",
-    "EXPIRATION DATE",
-    "UNIT",
-    "QUANTITY",
-    "ACTION",
-  ];
+const handlePrint = () => {
+  const printSection = document.getElementById("print-stockin");
+  if (printSection) {
+    const originalContents = document.body.innerHTML;
+    const printContents = printSection.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload(); // Refresh the window after printing
+    window.location.href = '/http://localhost:3000/admin/inventory#/admin/dashboard'; // Replace '/original-page' with the actual URL of the original page
+  }
+};
 
   return (
     <>
@@ -162,16 +80,29 @@ const View = () => {
             minHeight="60px"
             w="100%">
             <Text fontSize="lg" color={textColor} fontWeight="bold">
-              Stock-In
+              {/* Stock-In */}
+        
             </Text>
+       <Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text>
             <Button
               bg={bgButton}
               color="white"
               fontSize="xs"
               variant="no-hover"
-              onClick={onOpenAddModal}>
+              onClick={onOpen}>
               ADD NEW
             </Button>
+    
+          
+             {/* <Button
+              bg={bgButton}
+              color="white"
+              fontSize="xs"
+              variant="no-hover"
+              onClick={handlePrint}>
+              <Icon as={FaPrint} me="2" />
+              PRINT
+            </Button> */}
           </Flex>
         </CardHeader>
         <CardBody>
@@ -195,7 +126,7 @@ const View = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search"
+                  placeholder="Filter"
                   style={{
                     width: "100%",
                     border: "none",
@@ -217,168 +148,94 @@ const View = () => {
                 </Button>
               </Flex>
             </Flex>
+               <div id="print-stockin">
             <Flex direction="column" w="100%">
-              {/* <Box p="0px" my="5px" borderRadius="12px"> */}
-              <Flex direction="column" w="100%">
-                <TableContainer
-                  maxH="50vh"
-                  overflowY="auto"
-                  overflowX="auto"
-                  align={"center"}
-                  rounded="15px"
-                  border={"1px solid"}
-                  borderColor={borderColor}>
-                  <Table
-                    color={textColor}
-                    variant="striped"
-                    colorScheme="blue"
-                    border="1">
-                    <Thead>
-                      {columns.map((column) => (
-                        <Th
-                          key={column}
-                          style={{
-                            maxWidth: "100px",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            textAlign: "center",
-                          }}>
-                          <Text>{column}</Text>
-                        </Th>
-                      ))}
-                    </Thead>
-                    <Tbody>
-                      {entries.map((row, index) => {
-                        return (
-                          <Tr key={index}>
-                            <Td style={{ textAlign: "center" }}>
-                              {items.find((item) => item.id === row.item)
-                                ?.name || row.item}
-                            </Td>
-                            <Td style={{ textAlign: "center" }}>
-                              {row.givenBy}
-                              <span> {row.donor && `- ${row.donor}`}</span>
-                            </Td>
-                            <Td style={{ textAlign: "center" }}>
-                              {row.dateReceived}
-                            </Td>
-                            <Td style={{ textAlign: "center" }}>
-                              {row.expir_date}
-                            </Td>
-                            <Td style={{ textAlign: "center" }}>{row.unit}</Td>
-                            <Td style={{ textAlign: "center" }}>{row.qty}</Td>
-                            <Td
-                              alignItems={"center"}
-                              style={{
-                                maxWidth: "10px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                textAlign: "center",
-                              }}>
-                              <Button
-                                p="0px"
-                                bg="transparent"
-                                mb={{ sm: "10px", md: "0px" }}
-                                me={{ md: "12px" }}
-                                onClick={async () => {
-                                  if (window.confirm("Are you sure?")) {
-                                    handleDelete(row.id, row.item, row.qty);
-                                  }
-                                }}
-                                style={{
-                                  maxWidth: "100px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}>
-                                <Flex color="red.500" cursor="pointer" p="12px">
-                                  <Icon as={FaTrashAlt} me="4px" />
-                                  {/* <Text fontSize="sm" fontWeight="semibold">
-                                      DELETE
-                                    </Text> */}
-                                </Flex>
-                              </Button>
 
-                              <Button
-                                p="0px"
-                                bg="transparent"
-                                style={{
-                                  maxWidth: "100px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                                onClick={() => handleEditClick(row)}>
-                                <Flex
-                                  color={textColor}
-                                  cursor="pointer"
-                                  p="12px">
-                                  <Icon as={FaPencilAlt} me="4px" />
-                                  {/* <Text fontSize="sm" fontWeight="semibold">
-                                      EDIT
-                                    </Text> */}
-                                </Flex>
-                              </Button>
-                            </Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              </Flex>
-              {/* </Box> */}
-              {/* {entries.reverse().map((row, index) => {
+
+              <Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
+        <Flex direction="column" justify={"center"} maxWidth="100%">
+                      <TableContainer maxH="50vh" overflowY="auto">
+
+              <Table color={textColor} variant="striped" colorScheme="blue" border="1"  direction="column" justify={"center"} maxWidth="100%">
+                        <Thead>
+                                                 <Tr >  <Td colspan="8"><Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>Stock-In</Text></Td></Tr>
+        <Tr>
+          <Th width="20%" p="12px" textAlign="center">
+            Item Name
+          </Th>
+          <Th width="15%" p="12px" textAlign="center">
+            Given By
+          </Th>
+          <Th width="15%" p="12px" textAlign="center">
+            Date Received
+          </Th>
+          <Th width="15%" p="12px" textAlign="center">
+            Expiration Date
+          </Th>
+          <Th width="10%" p="12px" textAlign="center">
+            Unit
+          </Th>
+          <Th width="10%" p="12px" textAlign="center">
+            Quantity
+          </Th>
+          <Th width="15%" p="12px" textAlign="center">
+            Actions
+          </Th>
+        </Tr>
+      </Thead>
+                <Tbody>
+                 
+                </Tbody>
+                </Table>
+
+              </TableContainer>
+       </Flex>
+      </Box>
+
+
+
+
+
+
+
+
+            {entries.reverse().map((row, index) => {
                 // console.log(row.unit);
                 return (
                   <StockinRow
-                    entries={entries}
-                    setEntries={setEntries}
                     key={index}
                     // addEntries={addEntries}
                     id={row.id}
                     givenBy={row.givenBy}
                     donor={row.donor}
                     dateReceived={row.dateReceived}
+                    expir_date={row.expir_date}
                     itemID={row.item}
                     unit={row.unit}
                     qty={row.qty}
+                     
                   />
+                 
                 );
-              })} */}
-            </Flex>
+            })}
+                 {/* <StockinBarChart></StockinBarChart> */}
+              </Flex>
+              </div>
           </Flex>
         </CardBody>
       </Card>
+      {/* {addEntries.map((row, index) => ( */}
       <AddModal
-        {...{
-          entries,
-          setEntries,
-          inventoryList,
-          setInventoryList,
-          isOpen: isOpenAddModal,
-          onClose: onCloseAddModal,
-          initialRef,
-          finalRef,
-        }}
+        // key={index}
+        // itemName={row.name}
+        // itemUnit={row.unit}
+        // addEntries={addEntries}
+        isOpen={isOpen}
+        onClose={onClose}
+        initialRef={initialRef}
+        finalRef={finalRef}
       />
-
-      <UpdateModal
-        {...{
-          entries,
-          setEntries,
-          inventoryList,
-          setInventoryList,
-          addEntries,
-          isOpen: isOpenUpdateModal,
-          onClose: onCloseUpdateModal,
-          initialRef,
-          finalRef,
-          selectedRow,
-        }}
-      />
+      {/* ))} */}
     </>
   );
 };

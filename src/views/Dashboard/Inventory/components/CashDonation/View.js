@@ -19,19 +19,17 @@ import {
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
-import React, { useEffect } from "react";
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import React from "react";
+import { FaPencilAlt,FaPrint } from "react-icons/fa";
 import { useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import AddModal from "./AddModal";
-// import CashdonationRow from "./CashdonationRow";
+import CashdonationRow from "./CashdonationRow";
 import { cashDonationList } from "api/cashDonationAPI";
-import { cashDonationDelete } from "api/cashDonationAPI";
-import UpdateModal from "./UpdateModal";
 
 const View = () => {
   const iconTeal = useColorModeValue("blue.300", "blue.300");
-  const bgColor = useColorModeValue("#F8F9FA", "gray.800");
+   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const textColor = useColorModeValue("gray.700", "white");
   const borderColor = useColorModeValue("#dee2e6", "gray.500");
   const bgButton = useColorModeValue(
@@ -40,55 +38,33 @@ const View = () => {
   );
   const [query, setQuery] = useState("");
 
-  const [entries, setEntries] = useState([]);
+  const entries = cashDonationList().filter(
+    (entry) =>
 
-  useEffect(() => {
-    const fetchItems = async () => {
-      let data = await cashDonationList();
+      entry.controlNumber.toLowerCase().includes(query.toLowerCase()) ||
+      entry.givenBy.toLowerCase().includes(query.toLowerCase()) ||
+      entry.donor.toLowerCase().includes(query.toLowerCase()) ||
+       entry.date.toLowerCase().includes(query.toLowerCase()) ||
+      entry.modeOfTransfer.toLowerCase().includes(query.toLowerCase())
+  );
 
-      const filteredEntries = data.filter(
-        (entry) =>
-          entry.controlNumber.toLowerCase().includes(query.toLowerCase()) ||
-          entry.givenBy.toLowerCase().includes(query.toLowerCase()) ||
-          entry.modeOfTransfer.toLowerCase().includes(query.toLowerCase())
-      );
-      setEntries(filteredEntries);
-    };
-
-    fetchItems();
-  }, [query]);
-
-  const {
-    isOpen: isOpenAddModal,
-    onOpen: onOpenAddModal,
-    onClose: onCloseAddModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenUpdateModal,
-    onOpen: onOpenUpdateModal,
-    onClose: onCloseUpdateModal,
-  } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-
-  const columns = [
-    "FROM",
-    "DONOR",
-    "DATE RECEIVED",
-    "MODE OF TRANSFER",
-    "AMOUNT",
-    "ACTION",
-  ];
-
-  const [selectedRow, setSelectedRow] = useState(null);
-
-  const handleEditClick = (row) => {
-    setSelectedRow(row);
-    onOpenUpdateModal();
-  };
-
+  const handlePrint = () => {
+  const printSection = document.getElementById("print-donation");
+  if (printSection) {
+    const originalContents = document.body.innerHTML;
+    const printContents = printSection.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    setTimeout(() => {
+      window.location.reload();
+    }, 100); // Delay the reload to allow the buttons to be clickable after closing the print dialog
+  }
+};
   return (
     <>
       <Card p="16px" align={"start"}>
@@ -99,16 +75,27 @@ const View = () => {
             minHeight="60px"
             w="100%">
             <Text fontSize="lg" color={textColor} fontWeight="bold">
-              Cash Donation
-            </Text>
+              {/* Cash Donation */}
+           </Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text>
             <Button
               bg={bgButton}
               color="white"
               fontSize="xs"
               variant="no-hover"
-              onClick={onOpenAddModal}>
+              onClick={onOpen}>
               ADD NEW
             </Button>
+    
+          
+             {/* <Button
+              bg={bgButton}
+              color="white"
+              fontSize="xs"
+              variant="no-hover"
+              onClick={handlePrint}>
+              <Icon as={FaPrint} me="2" />
+              PRINT
+            </Button> */}
           </Flex>
         </CardHeader>
         <CardBody>
@@ -132,7 +119,7 @@ const View = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search"
+                  placeholder="Filter"
                   style={{
                     width: "100%",
                     border: "none",
@@ -154,117 +141,48 @@ const View = () => {
                 </Button>
               </Flex>
             </Flex>
+            <div id="print-donation">
             <Flex direction="column" w="100%">
-              <TableContainer
-                maxH="50vh"
-                overflowY="auto"
-                overflowX="auto"
-                align={"center"}
-                rounded="15px"
-                border={"1px solid"}
-                borderColor={borderColor}>
-                <Table
-                  color={textColor}
-                  variant="striped"
-                  colorScheme="blue"
-                  border="1">
-                  <Thead>
-                    {columns.map((column) => (
-                      <Th
-                        key={column}
-                        style={{
-                          maxWidth: "100px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          textAlign: "center",
-                        }}>
-                        <Text>{column}</Text>
-                      </Th>
-                    ))}
-                  </Thead>
-                  <Tbody>
-                    {entries.reverse().map((row, index) => {
-                      return (
-                        <Tr key={index}>
-                          <Td style={{ textAlign: "center" }}>{row.givenBy}</Td>
-                          <Td style={{ textAlign: "center" }}>
-                            {row.donor || "-"}
-                          </Td>
-                          <Td style={{ textAlign: "center" }}>{row.date}</Td>
-                          <Td style={{ textAlign: "center" }}>
-                            {row.modeOfTransfer}
-                          </Td>
-                          <Td style={{ textAlign: "center" }}>{row.amount}</Td>
-                          <Td
-                            alignItems={"center"}
-                            style={{
-                              maxWidth: "10px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}>
-                            <Button
-                              p="0px"
-                              bg="transparent"
-                              mb={{ sm: "10px", md: "0px" }}
-                              me={{ md: "12px" }}
-                              onClick={async () => {
-                                if (window.confirm("Are you sure?")) {
-                                  await cashDonationDelete(row.id);
-                                  setEntries((prevEntries) =>
-                                    prevEntries.filter(
-                                      (item) => item.id !== row.id
-                                    )
-                                  );
-                                }
-                              }}
-                              style={{
-                                maxWidth: "100px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}>
-                              <Flex color="red.500" cursor="pointer" p="12px">
-                                <Icon as={FaTrashAlt} me="4px" />
-                                {/* <Text fontSize="sm" fontWeight="semibold">
-                                    DELETE
-                                  </Text> */}
-                              </Flex>
-                            </Button>
+<Box p="0px" bg={bgColor} my="5px" borderRadius="12px">
+        <Flex direction="column" justify={"center"} maxWidth="100%">
+                      <TableContainer maxH="50vh" overflowY="auto">
 
-                            <Button
-                              p="0px"
-                              bg="transparent"
-                              style={{
-                                maxWidth: "100px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                              onClick={() => handleEditClick(row)}>
-                              <Flex color={textColor} cursor="pointer" p="12px">
-                                <Icon as={FaPencilAlt} me="4px" />
-                                {/* <Text fontSize="sm" fontWeight="semibold">
-                                    EDIT
-                                  </Text> */}
-                              </Flex>
-                            </Button>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
+              <Table color={textColor} variant="striped" colorScheme="blue" border="1"  direction="column" justify={"center"} maxWidth="100%">
+                <Thead>
+                    <Tr >  <Td colspan="8"><Text fontWeight={"semibold"} fontSize={"xl"} textAlign={"center"}>Cash Donation</Text></Td></Tr>
+          <Tr>
+            <Th width="20%" p="12px" textAlign="center">
+              From
+            </Th>
+            <Th width="20%" p="12px" textAlign="center">
+              Donor
+            </Th>
+            <Th width="15%" p="12px" textAlign="center">
+              Date Received
+            </Th>
+            <Th width="20%" p="12px" textAlign="center">
+              Mode of Transfer
+            </Th>
+            <Th width="10%" p="12px" textAlign="center">
+              Amount
+            </Th>
+            <Th width="15%" p="12px" textAlign="center">
+              Action
+            </Th>
+          </Tr>
+        </Thead>
+                <Tbody>
+                 
+                </Tbody>
                 </Table>
+
               </TableContainer>
-            </Flex>
-            {/* {entries.reverse().map((row, index) => {
+       </Flex>
+      </Box>
+            {entries.reverse().map((row, index)=> {
                 // console.log(row.date);
                 return (
                   <CashdonationRow
-                    entries={entries}
-                    setEntries={setEntries}
                     key={index}
                     id={row.id}
                     controlNumber={row.controlNumber}
@@ -275,40 +193,14 @@ const View = () => {
                     date={row.date}
                   />
                 );
-              })} */}
+              })}
+              </Flex>
+              </div>
           </Flex>
         </CardBody>
       </Card>
 
-      <AddModal
-        {...{
-          entries,
-          setEntries,
-          isOpen: isOpenAddModal,
-          onClose: onCloseAddModal,
-          initialRef,
-          finalRef,
-        }}
-      />
-
-      <UpdateModal
-        {...{
-          entries,
-          setEntries,
-          // id,
-          // controlNumber,
-          // givenBy,
-          // donor,
-          // amount,
-          // modeOfTransfer,
-          // date,
-          isOpen: isOpenUpdateModal,
-          onClose: onCloseUpdateModal,
-          initialRef,
-          finalRef,
-          selectedRow,
-        }}
-      />
+      <AddModal {...{ isOpen, onClose, initialRef, finalRef }} />
     </>
   );
 };

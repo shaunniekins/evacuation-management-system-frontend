@@ -91,9 +91,8 @@ const TableList = () => {
     }
     return age;
   };
-
   const calculatelengthofyear = (LentghOfYear) => {
-    const today = new Date();
+      const today = new Date();
     const birthdateObj = new Date(LentghOfYear);
     let length_of_year_count = today.getFullYear() - birthdateObj.getFullYear();
     const monthDiff = today.getMonth() - birthdateObj.getMonth();
@@ -105,7 +104,6 @@ const TableList = () => {
     }
     return length_of_year_count;
   };
-
   return (
     <>
       <Flex
@@ -167,19 +165,11 @@ const TableList = () => {
                 <Th color="gray.400">PWD</Th>
                 <Th color="gray.400">Indigenous Person</Th>
                 <Th color="gray.400">Head of the Family</Th>
-                <Th color="gray.400" pr="0px">
-                  Household Number
-                </Th>
-                <Th color="gray.400" pr="0px">
-                  Street
-                </Th>
-                <Th color="gray.400" pr="0px">
-                  {" "}
-                  Length Of Year
-                </Th>
-                <Th color="gray.400" pr="0px">
-                  Options
-                </Th>
+                <Th color="gray.400">Senior Citizens</Th>
+                <Th color="gray.400" pr="0px">Household Number</Th>
+                <Th color="gray.400" pr="0px">Street</Th>
+                <Th color="gray.400" pr="0px"> Lenght Of Year</Th>
+                <Th color="gray.400" pr="0px">Options</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -201,10 +191,10 @@ const TableList = () => {
                   <Td>{row.is_pwd}</Td>
                   <Td>{row.is_ip}</Td>
                   <Td>{row.is_head}</Td>
+                  <Td>{row.is_senior}</Td>
                   <Td>{row.household_num}</Td>
-                  <Td>{row.street_add}</Td>
-                  <Td>{calculatelengthofyear(row.length_of_year)}</Td>
-
+                      <Td>{row.street_add}</Td>
+                        <Td>{calculatelengthofyear(row.length_of_year)}</Td>
                   <Td>
                     <Flex justify="space-around">
                       <Button

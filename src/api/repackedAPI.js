@@ -1,8 +1,20 @@
-export const RepackedList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/repacked");
-  let data = await response.json();
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-  return data;
+export const RepackedList = () => {
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    getRepacked();
+  }, []);
+
+  const getRepacked = async () => {
+    let response = await fetch(`${BASE_URL}/api/repacked`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
 
 export const RepackedAdd = async (
@@ -14,7 +26,7 @@ export const RepackedAdd = async (
   barangay
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/repacked/", {
+    const response = await fetch(`${BASE_URL}/api/repacked/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -47,7 +59,7 @@ export const RepackedUpdate = async (
   barangay
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/repacked/" + id, {
+    const response = await fetch(`${BASE_URL}/api/repacked/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -63,7 +75,6 @@ export const RepackedUpdate = async (
       }),
     });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -72,17 +83,19 @@ export const RepackedUpdate = async (
 };
 
 export const RepackedDelete = (id) => {
-  fetch("http://127.0.0.1:8000/api/repacked/" + id, {
-    method: "DELETE",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then(() => {
-      console.log("Deleted!");
+  if (window.confirm("Are you sure?")) {
+    fetch(`${BASE_URL}/api/repacked/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then(() => {
+        console.log("Deleted!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };

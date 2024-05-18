@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
 export const EvacueeList = () => {
   const [entries, setEntries] = useState([]);
@@ -8,7 +9,7 @@ export const EvacueeList = () => {
   }, []);
 
   const getEvacuee = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/resident");
+    let response = await fetch(`${BASE_URL}/api/resident`);
     let data = await response.json();
     setEntries(data);
   };
@@ -33,10 +34,11 @@ export const evacueeAdd = async (
   is_head,
   household_num,
   street_add,
-  length_of_year
+  length_of_year,
+  is_senior
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/resident/", {
+    const response = await fetch(`${BASE_URL}/api/resident/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -61,6 +63,7 @@ export const evacueeAdd = async (
         household_num: household_num,
         street_add: street_add,
         length_of_year: length_of_year,
+        is_senior: is_senior,
       }),
     });
     const data = await response.json();
@@ -89,10 +92,11 @@ export const evacueeUpdate = async (
   is_head,
   household_num,
   street_add,
-  length_of_year
+  length_of_year,
+  is_senior
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/resident/" + id, {
+    const response = await fetch(`${BASE_URL}/api/resident/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -116,10 +120,10 @@ export const evacueeUpdate = async (
         household_num: household_num,
         street_add: street_add,
         length_of_year: length_of_year,
+        is_senior: is_senior,
       }),
     });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -129,7 +133,7 @@ export const evacueeUpdate = async (
 
 export const evacueeDelete = (id) => {
   if (window.confirm("Are you sure?")) {
-    fetch("http://127.0.0.1:8000/api/resident/" + id, {
+    fetch(`${BASE_URL}/api/resident/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

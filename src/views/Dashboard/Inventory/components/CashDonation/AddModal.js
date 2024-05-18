@@ -15,16 +15,8 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { cashDonationAdd } from "api/cashDonationAPI";
 
 import { useHistory } from "react-router-dom";
-import { cashDonationList } from "api/cashDonationAPI";
 
-const AddModal = ({
-  entries,
-  setEntries,
-  isOpen: isOpenAddModal,
-  onClose: onCloseAddModal,
-  initialRef,
-  finalRef,
-}) => {
+const AddModal = ({ isOpen, onClose, initialRef, finalRef }) => {
   const history = useHistory();
 
   const handleSubmit = async (event) => {
@@ -38,9 +30,8 @@ const AddModal = ({
         event.target.modeOfTransfer.value,
         event.target.date.value
       ); // call the API function
-      const updatedItems = await cashDonationList();
-      setEntries(updatedItems);
-      onCloseAddModal();
+      onClose();
+      history.push("/admin/dashboard");
     } catch (error) {
       alert("Failed");
     }
@@ -53,8 +44,8 @@ const AddModal = ({
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
-      isOpen={isOpenAddModal}
-      onClose={onCloseAddModal}
+      isOpen={isOpen}
+      onClose={onClose}
       closeOnOverlayClick={false}
       isCentered>
       <ModalOverlay />
@@ -127,7 +118,7 @@ const AddModal = ({
             <Button colorscheme="blue" mr={3} type="submit">
               Add
             </Button>
-            <Button onClick={onCloseAddModal}>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </form>
       </ModalContent>

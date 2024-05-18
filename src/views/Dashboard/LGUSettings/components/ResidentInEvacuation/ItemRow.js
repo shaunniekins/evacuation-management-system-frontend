@@ -13,25 +13,28 @@ import { useDisclosure } from "@chakra-ui/react";
 
 import { EvacueeList } from "api/evacueeAPI";
 import { EvacuationCenterList } from "api/evacuationCenterAPI";
-
+import { useContext } from "react";
 import { useHistory } from "react-router-dom";
-
+import AuthContext from "context/AuthContext";
 function ItemRow(props) {
   const textColor = useColorModeValue("gray.700", "white");
   const bgColor = useColorModeValue("#F8F9FA", "gray.800");
   const nameColor = useColorModeValue("gray.500", "white");
   const { id, resident, evacuation, isHead, date } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  let { userPosition, userBarangay } = useContext(AuthContext);
   const history = useHistory();
 
   const residentEntry = EvacueeList();
   const evacuationCenterEntry = EvacuationCenterList();
 
-  const matchingResidentEntry = residentEntry.find(
+  const matchingResidentEntry = residentEntry
+    .find(
     (entry) => entry.id === resident
   );
-  const matchingEvacuationCenterEntry = evacuationCenterEntry.find(
+  const matchingEvacuationCenterEntry = evacuationCenterEntry
+     .filter((entry) => entry.barangay === userBarangay)
+  .find(
     (entry) => entry.id === evacuation
   );
 
@@ -54,7 +57,7 @@ function ItemRow(props) {
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               <Text as="span" color="gray.400">
-                {isHead === "HEAD" ? "Head of the Family" : ""}
+                {isHead === "HEAD" ? "Head of the Family" : "Member of the Family"}
               </Text>
             </Text>
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">

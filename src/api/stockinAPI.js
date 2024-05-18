@@ -1,8 +1,20 @@
-export const StockinList = async () => {
-  let response = await fetch("http://127.0.0.1:8000/api/stockin");
-  let data = await response.json();
+import { useState, useEffect } from "react";
+import { BASE_URL } from "../urlConfig";
 
-  return data;
+export const StockinList = () => {
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    getStockin();
+  }, []);
+
+  const getStockin = async () => {
+    let response = await fetch(`${BASE_URL}/api/stockin`);
+    let data = await response.json();
+    setEntries(data);
+  };
+
+  return entries;
 };
 
 export const StockinAdd = async (
@@ -10,25 +22,23 @@ export const StockinAdd = async (
   donor,
   dateReceived,
   item,
-  // itemUnit,
   qty,
   expir_date
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/stockin/", {
+    const response = await fetch(`${BASE_URL}/api/stockin/`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // id: null,
         givenBy: givenBy,
         donor: donor,
         dateReceived: dateReceived,
         item: item,
         qty: qty,
-        expir_date: expir_date,
+        expir_date: expir_date
       }),
     });
     const data = await response.json();
@@ -49,7 +59,7 @@ export const StockinUpdate = async (
   qty
 ) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/stockin/" + id, {
+    const response = await fetch(`${BASE_URL}/api/stockin/${id}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -59,13 +69,12 @@ export const StockinUpdate = async (
         givenBy: givenBy,
         donor: donor,
         dateReceived: dateReceived,
-        expir_date: expir_date,
         item: item,
         qty: qty,
+        expir_date: expir_date
       }),
     });
     const data = await response.json();
-    // alert("Updated!");
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -74,17 +83,19 @@ export const StockinUpdate = async (
 };
 
 export const StockinDelete = (id) => {
-  fetch("http://127.0.0.1:8000/api/stockin/" + id, {
-    method: "DELETE",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then(() => {
-      console.log("Deleted!");
+  if (window.confirm("Are you sure?")) {
+    fetch(`${BASE_URL}/api/stockin/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then(() => {
+        console.log("Deleted!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };
