@@ -52,7 +52,8 @@ function EvacuationRow(props) {
   let userImage =
   image === undefined || image === null
     ? false
-    : `${BASE_URL}${image}`;
+    : `${BASE_URL}/api${image}`;
+
 
   return (
     <>
