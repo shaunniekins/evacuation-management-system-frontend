@@ -10,8 +10,7 @@ import { useContext } from "react";
 import AuthContext from "context/AuthContext";
 function Calamity() {
   let { userPosition } = useContext(AuthContext);
-  const isAdmin = userPosition === "Administrator";
-  const isPersonnel = userPosition === "Personnel";
+  const isAdmin = userPosition !== "Personnel";
   const tabs = [
     { name: "Add Item", component: <ViewAddItem /> },
     { name: "Stock-in", component: <ViewStockin /> },
